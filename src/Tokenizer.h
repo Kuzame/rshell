@@ -22,16 +22,16 @@ private:
 		commandStream.str(value);
 	}
 
-	void _tokenize(string commands)
+	void parse(string token)
 	{
 		
 		//makes input stream from commands
-		string token = commands; //local variable for tokens read from commandStream
+		string token; //local variable for tokens read from commandStream
 
 		int comment;
 		int semicolon;
-		int or;
-		int and;
+		//int or;
+		//int and;
 
 	
 		//precedence level 0
@@ -45,8 +45,11 @@ private:
 			_tokenize(token.substr(semicolon, token.size()));	//if call _tokenize() for the index from the ; to the end of the string and handle that appropriately
 		}
 
-		//at this point of recursion all of the different commands with their arguments have been separated into different function calls
+		//at this point of recursion all of the different commands with their arguments have been separated into different function calls, but they may still include a value such as || or &&
 
+		commandStream.setVal(token + " "); 				//commandStream may or may not contain || or && and will still have whitespaces
+		
+/*------10/24/16
 		//precedence level 2
 		if ((or = token.find_first_of("||")) != -1)
 		{
@@ -61,8 +64,9 @@ private:
 
 		}
 
+*/
 		//create string stream for getting individual strings out of the larger string
-		setVal(commands);
+		//setVal(commands);
 
 		//commandStream
 			
@@ -96,24 +100,25 @@ private:
 			
 	}
 
+	void tokenize(){
+		string temp;
+		while(commandStream >> temp){
+			tokenList.pushBack(new Token(temp));	//container object will contain a list of commands and || and && in the order that they were passed
+		} 
+	}
+
 public:
 
 	Tokenizer(){ setVal(""); }
 	Tokenizer(string value){
-		
+		execute(value);
 	}
 
 	bool execute(string value){
 		setVal(value);
 		bool successfull = true;
-		_tokenize(value);
-		//if ()
-		//{
-		//}
-		//else{
-		//successfull = false;
-		//}
-
+		parse(value);	//first parses to separate into string with only commands and || and &&
+		tokenize();	//creat tokens out of the newly parsed string in stringstream member variable
 		return successfull;
 	}
 };
