@@ -20,23 +20,18 @@ private:
 
 	void _tokenize(string commands)
 	{
-		
 		//makes input stream from commands
-		string token; //local variable for tokens read from commandStream
+		string token =""; //local variable for tokens read from commandStream
 
-
-		int comment;
-		int semicolon;
-		int or;
-		int and;
+		int comment, semicolon, orVar, andVar; //Adrian: We cannot use "or" or "and" since they both are an actual variable (unless we're overriding it, which what we don't want to do)
 
 		while (*commandStream >> token) //loops as long as there is still an item left inside commandStream
 		{
 			size_t index;
 			comment = token.find("#");
 			semicolon = token.find(";");
-			or = token.find("||");
-			and = token.find("&&");
+			orVar = token.find("||");
+			andVar = token.find("&&");
 
 			if (comment != -1)
 			{
@@ -52,9 +47,7 @@ private:
 			else if (semicolon != -1)
 			{
 				//push to the vector anything to the left of the semicolon and renintiate tokenize for whatever is in the right; perhaps recursive calling the function
-			}
-
-			
+			}			
 		}
 	}
 
@@ -65,7 +58,7 @@ public:
 		
 	}
 
-	bool execute(string value){
+	bool execute(string value){ //Adrian: is this meant to override parent's?
 		setVal(value);
 		bool successfull = true;
 		_tokenize(value);

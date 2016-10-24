@@ -10,9 +10,7 @@ using namespace std;
 class Base
 {
 protected:
-	virtual bool execute() = 0;
-
-
+	virtual bool execute() = 0; //Adrian: either we need a string parameter here, or remove the string parameter in its children classes
 };
 
 
