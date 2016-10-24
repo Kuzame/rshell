@@ -35,14 +35,14 @@ private:
 
 	
 		//precedence level 0
-		if ((comment = token.find_first_of("#")) != -1) {		//if tokenizer finds comment, remove whatever is to the right and recursively call _tokenize() in order to pass the next string
-			_tokenize(token.substr(0, comment));
+		if ((comment = token.find_first_of("#")) != -1) {		//if parser finds comment, remove whatever is to the right and recursively call _tokenize() in order to pass the next string
+			parse(token.substr(0, comment));
 		}
 		//precedence level 1
-		if ((semicolon = token.find_first_of(";")) != -1)		//if tokenizer finds semicolon, seperate the two different set of arguments into two _tokenize() calls
+		if ((semicolon = token.find_first_of(";")) != -1)		//if parser finds semicolon, seperate the two different set of arguments into two _tokenize() calls
 		{
-			_tokenize(token.substr(0, semicolon));				//if call _tokenize() for first part of string up until the ; delimeter
-			_tokenize(token.substr(semicolon, token.size()));	//if call _tokenize() for the index from the ; to the end of the string and handle that appropriately
+			parse(token.substr(0, semicolon));				//if call _tokenize() for first part of string up until the ; delimeter
+			parse(token.substr(semicolon, token.size()));	//if call parse() for the index from the ; to the end of the string and handle that appropriately
 		}
 
 		//at this point of recursion all of the different commands with their arguments have been separated into different function calls, but they may still include a value such as || or &&
