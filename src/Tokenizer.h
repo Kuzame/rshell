@@ -14,7 +14,6 @@ class Tokenizer : public Base
 {
 	
 private:
-	//vector<size_t> allOccurences;
 	TokenContainer* tokenList;
 	stringstream commandStream;
 
@@ -24,15 +23,8 @@ private:
 
 	void parse(string token)
 	{
-		
-		//makes input stream from commands
-		string token; //local variable for tokens read from commandStream
-
 		int comment;
 		int semicolon;
-		//int or;
-		//int and;
-
 	
 		//precedence level 0
 		if ((comment = token.find_first_of("#")) != -1) {		//if parser finds comment, remove whatever is to the right and recursively call _tokenize() in order to pass the next string
@@ -53,7 +45,6 @@ private:
 		//precedence level 2
 		if ((or = token.find_first_of("||")) != -1)
 		{
-
 		}
 
 		//at this point of recursion all of the 
@@ -61,26 +52,18 @@ private:
 		//precedence level 2
 		if ((and = token.find_first_of("&&")) != -1)
 		{
-
 		}
 
-*/
 		//create string stream for getting individual strings out of the larger string
 		//setVal(commands);
-
 		//commandStream
-			
-		
-
-
-
-		/*
+	*/	
+/*
 			size_t index;
 			comment = token.find("#");
 			semicolon = token.find(";");
 			or = token.find("||");
 			and = token.find("&&");
-
 			if (comment != -1)
 			{
 				index = token.find_first_of("#");
