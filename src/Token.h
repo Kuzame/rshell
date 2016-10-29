@@ -20,7 +20,7 @@ public:
 		this->setValue("");
 	}
 	Token(string value){
-		this->execute(value);
+		this->setValue(value);
 	}
 	~Token(){}
 
@@ -29,9 +29,14 @@ public:
 		return this->value;
 	}
 
-	virtual bool execute(string value){
+	const char * getCharPtr() {
+		return (this->value.c_str());
+	}
+
+
+	bool execute(){
 		bool successfull = true;
-		setValue(value);
+		//setValue(value);
 		//if ()
 		//{
 		//}
