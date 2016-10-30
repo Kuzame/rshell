@@ -63,6 +63,7 @@ private:
 				if (result.size() > 0)
 				{
 					tokenize(result);															//creates a Token for result of everything before the '|' was found if there was something there
+					commandStream.setVal("");													//makes an empty string be set in stream in order to terminate after
 				}
 			}
 
@@ -205,19 +206,27 @@ private:
 	void tokenize(string value){
 		tokenList.push_back(new Token(value));													//creates new token and appends it the the list
 	}
+	
+	void removeWhiteSpace(){
+		tokenList.
+	}
 
 public:
 
 	Tokenizer(){ setVal(""); }
 	Tokenizer(string value){
-		execute(value);
-	}
-
-	bool execute(string value){
 		setVal(value);
+		execute();
+	}
+	void
+		vector<Token*> tokenList;
+	stringstream commandStream;
+
+	bool execute(){
 		bool successfull = true;
-		parse();	//first parses to separate into string with only commands and || and &&
-		//tokenize();	//creat tokens out of the newly parsed string in stringstream member variable
+		if(setVal())
+		parse();	//parses and tokenizes the values into a vector
+		removeWhiteSpace();
 		return successfull;
 	}
 };
