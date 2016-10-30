@@ -6,7 +6,6 @@
 #include <vector>
 #include "Base.h"
 #include "Token.h"
-#include "TokenContainer.h"
 
 using namespace std;
 
@@ -21,73 +20,77 @@ private:
 		commandStream.str(value);
 	}
 
-	void parse(string token)
+	void parse()
 	{
 		string result;																	//the value of a token to be created is stored here
 		char currentChar;																//the currentChar used in traversing through characters
 		char nextChar;																	//the nextChar used in finding the next character
-		int comment;																	//stores index for the comment
 
 
-		if ((comment = token.find_first_of("#")) != -1) {		//if parser finds comment, remove whatever is to the right and recursively call _tokenize() in order to pass the next string
-			parse(token.substr(0, comment));
-		}
-
-		//at this point of recursion all of the comments have been removed
-		while (commandStream.get(currentChar)){
+																						//at this point of recursion all of the comments have been removed
+		while (commandStream.get(currentChar)) {
 			//case: "
-			if (this->isQuote(currentChar))														//if started a quote execute this to get all values inside the quote without worrying about what is inside of it
+			if (isQuote(currentChar))														//if started a quote execute this to get all values inside the quote without worrying about what is inside of it
 			{
 				result += currentChar;															//adds character to the string
-				while (commandStream.get(currentChar) && (!this->isQuote(currentChar)))			//command gets the next character and puts it in currentChar and checks if that currentChar is not a quotation mark
+				while (commandStream.get(currentChar) && (!isQuote(currentChar)))			//command gets the next character and puts it in currentChar and checks if that currentChar is not a quotation mark
 				{
 					result += currentChar;														//appends the next character read to the string result
 					nextChar = commandStream.peek();											//gets the value of the next character to be accessed using get()
-					
-					//checks if value of the next character is a quote, if so it stores the value in result since the while loop will exit
-					if (this->isQuote(nextChar))
+
+																								//checks if value of the next character is a quote, if so it stores the value in result since the while loop will exit
+					if (isQuote(nextChar))
 					{
 						commandStream.get(currentChar);
 						result += currentChar;
 					}
 
 					//if the next character is a null terminator for the string stream, but quotation has not been found, ask for more input
-					if (isNull(nextChar))									
+					if (isNull(nextChar))
 					{
 						string temp;
-						do 
+						do
 						{
-							temp = this->askForInputLine(); //prompts for more input
+							temp = askForInputLine(); //prompts for more input
 
 						} while (!containsQuoteAtLastIndex(temp));								//keeps asking for more input while user doesn't enter a quotation mark as the last character
 					}
 				}
 			}
 
-			//case: |
-			else if (isOr(currentChar) && isOr(commandStream.peek())){
+			//case: #
+			else if (isPound(currentChar)) {
 				if (result.size() > 0)
 				{
 					tokenize(result);															//creates a Token for result of everything before the '|' was found if there was something there
 				}
-				
+			}
+
+			//case: |
+			else if (isOr(currentChar) && isOr(commandStream.peek())) {
+				if (result.size() > 0)
+				{
+					tokenize(result);															//creates a Token for result of everything before the '|' was found if there was something there
+				}
+
 				commandStream.get(nextChar);													//get the next or
-				result = currentChar + nextChar;												//the result is now the two pipes
+				result = currentChar;
+				result += nextChar;												//the result is now the two pipes
 				tokenize(result);																//creates a Token for the result
-				//resets result
+																								//resets result
 				result = "";
 			}
 
 			//case: &
 			else if (isAnd(currentChar) && isAnd(commandStream.peek())) {
-				if(result.size() > 0){
+				if (result.size() > 0) {
 					tokenize(result);															//creates a Token for result of everything before the '&' was found if there was something there
 				}
-				
+
 				commandStream.get(nextChar);													//get the next or
 				result = currentChar + nextChar;												//the result is now the two bars
 				tokenize(result);																//creates a Token for the result
-				//resets result																	
+																								//resets result																	
 				result = "";
 			}
 
@@ -98,7 +101,7 @@ private:
 				if (isNull(nextChar))															//if this is the last character in the line, proceed to tokenize everything that came before that
 				{
 					if (result.size() > 0)
-					{	
+					{
 						tokenize(result);
 					}
 					else {
@@ -106,13 +109,15 @@ private:
 					}
 				}
 				else {
-						//if the nextChar is not the null terminator
+					//if the nextChar is not the null terminator
+					commandStream.get(currentChar);
 					result += currentChar;														//simply append the character to the string
 				}
-				
+
 
 			}
 		}
+
 
 
 		
@@ -133,7 +138,7 @@ private:
 		//setVal(commands);
 		//commandStream
 	*/	
-/*
+	/*
 			size_t index;
 			comment = token.find("#");
 			semicolon = token.find(";");
@@ -175,7 +180,11 @@ private:
 	}
 
 	bool isNull(char val) {
-		return val == '\0';
+		return val == -1;
+	}
+
+	bool isPound(char val) {
+		return val == '#';
 	}
 
 	//returns input entered
@@ -207,8 +216,8 @@ public:
 	bool execute(string value){
 		setVal(value);
 		bool successfull = true;
-		parse(value);	//first parses to separate into string with only commands and || and &&
-		tokenize();	//creat tokens out of the newly parsed string in stringstream member variable
+		parse();	//first parses to separate into string with only commands and || and &&
+		//tokenize();	//creat tokens out of the newly parsed string in stringstream member variable
 		return successfull;
 	}
 };
