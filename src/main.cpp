@@ -4,7 +4,6 @@
 #include <vector>
 #include "Base.h"
 #include "Token.h"
-#include "TokenContainer.h"
 #include "Tokenizer.h"
 #include "Executor.h"
 
@@ -15,13 +14,18 @@ int main(){
 	cout << "do it\n>>";
 
 	getline(cin, input);
-
+    
 	Tokenizer* temp = new Tokenizer(input);
-	
-	for (unsigned i = 0; i < temp->getVector().size(); i++)
-	{
-		cout << "." << temp->getVector().at(i)->getValue() << ".\n";
-	}
+    Executor* test = new Executor (temp);
+    
+    test->printCommands();
+    test->print();
+    
+//	for (unsigned i = 0; i < temp->getVector().size(); i++)
+//	{
+//		cout << "." << temp->getVector().at(i)->getValue() << ".\n";
+//	}
+    
 	system("pause");
 	return 0;
 }
