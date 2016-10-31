@@ -22,23 +22,23 @@ private:
 
 	void parse()
 	{
-		string result;																	//the value of a token to be created is stored here
-		char currentChar;																//the currentChar used in traversing through characters
-		char nextChar;																	//the nextChar used in finding the next character
+		string result;				//the value of a token to be created is stored here
+		char currentChar;			//the currentChar used in traversing through characters
+		char nextChar;				//the nextChar used in finding the next character
 
-
-																						//at this point of recursion all of the comments have been removed
-		while (commandStream.get(currentChar)) {
+		while (this->commandStream.get(currentChar)) {
 			//case: "
-			if (isQuote(currentChar))														//if started a quote execute this to get all values inside the quote without worrying about what is inside of it
-			{
-				result += currentChar;															//adds character to the string
-				while (commandStream.get(currentChar) && (!isQuote(currentChar)))			//command gets the next character and puts it in currentChar and checks if that currentChar is not a quotation mark
-				{
-					result += currentChar;														//appends the next character read to the string result
-					nextChar = commandStream.peek();											//gets the value of the next character to be accessed using get()
+			//if started a quote execute this to get all values inside the quote without worrying about what is inside of it
+			if (isQuote(currentChar)) {	
+				result += currentChar;														//adds character to the string
 
-																								//checks if value of the next character is a quote, if so it stores the value in result since the while loop will exit
+				//command gets the next character and puts it in currentChar and checks if that currentChar is not a quotation mark
+				while (commandStream.get(currentChar) && (!isQuote(currentChar)))			
+				{
+					result += currentChar;													//appends the next character read to the string result
+					nextChar = commandStream.peek();										//gets the value of the next character to be accessed using get()
+
+					//checks if value of the next character is a quote, if so it stores the value in result since the while loop will exit
 					if (isQuote(nextChar))
 					{
 						commandStream.get(currentChar);
@@ -53,7 +53,8 @@ private:
 						{
 							temp = askForInputLine(); //prompts for more input
 
-						} while (!containsQuoteAtLastIndex(temp));								//keeps asking for more input while user doesn't enter a quotation mark as the last character
+						} while (!containsQuoteAtLastIndex(temp));
+						//keeps asking for more input while user doesn't enter a quotation mark as the last character
 					}
 				}
 			}
@@ -63,7 +64,7 @@ private:
 				if (result.size() > 0)
 				{
 					tokenize(result);															//creates a Token for result of everything before the '|' was found if there was something there
-					commandStream.setVal("");													//makes an empty string be set in stream in order to terminate after
+					commandStream.str("");													//makes an empty string be set in stream in order to terminate after
 				}
 			}
 
@@ -203,12 +204,20 @@ private:
 		return (line.at(line.size() - 1) == '"');
 	}
 
+	//creates new token and appends it the the vector tokenList
 	void tokenize(string value){
-		tokenList.push_back(new Token(value));													//creates new token and appends it the the list
+		tokenList.push_back(new Token(value));
 	}
-	
-	void removeWhiteSpace(){
-		tokenList.
+	//moved to Token.h
+	//cleans up the whitespace in the tokenList Tokens
+// 	void removeWhiteSpace(){
+// 		for (unsigned i = 0; i < this->tokenList.size(); i++){
+// 			string temp = this->tokenList.at(i)->getValue();
+// 			int indexStart = temp.find_first_not_of(" ");		//find first index that is not whitespace
+// 			int indexEnd = temp.find_last_not_of(" ");			//find last index that is not whitespace
+// 			temp.substr(indexStart, indexEnd);					//make a substrinng between the indexStart and indexEnd
+// 			tokenList.at(i)->setValue(temp);					//mutate the original Token->value in tokenList to the new list
+// 		}
 	}
 
 public:
@@ -218,13 +227,9 @@ public:
 		setVal(value);
 		execute();
 	}
-	void
-		vector<Token*> tokenList;
-	stringstream commandStream;
 
 	bool execute(){
 		bool successfull = true;
-		if(setVal())
 		parse();	//parses and tokenizes the values into a vector
 		removeWhiteSpace();
 		return successfull;
