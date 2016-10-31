@@ -218,7 +218,7 @@ private:
 // 			temp.substr(indexStart, indexEnd);					//make a substrinng between the indexStart and indexEnd
 // 			tokenList.at(i)->setValue(temp);					//mutate the original Token->value in tokenList to the new list
 // 		}
-	}
+//		}
 
 public:
 
@@ -231,7 +231,6 @@ public:
 	bool execute(){
 		bool successfull = true;
 		parse();	//parses and tokenizes the values into a vector
-		removeWhiteSpace();
 		return successfull;
 	}
 };
