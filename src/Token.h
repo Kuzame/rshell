@@ -40,7 +40,7 @@ private:
 		string temp = this->getValue();
 		int indexStart = temp.find_first_not_of(' ');		//find first index that is not whitespace
 		int indexEnd = temp.find_last_not_of(' ');			//find last index that is not whitespace
-		temp = temp.substr(indexStart, indexEnd);					//make a substring between the indexStart and indexEnd
+		temp = temp.substr(indexStart, indexEnd + 1);			//make a substring between the indexStart and indexEnd
 		this->setValue(temp);								//mutate the original Token->value in tokenList to the new list
 	}
 

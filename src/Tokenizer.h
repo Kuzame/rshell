@@ -4,6 +4,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <cstring>
 #include "Base.h"
 #include "Token.h"
 
@@ -46,18 +47,21 @@ private:
 					{
 						commandStream.get(currentChar);
 						result += currentChar;
+						this->tokenize(result);
 					}
 
 					//if the next character is a null terminator for the string stream, but quotation has not been found, ask for more input
 					if (isNull(nextChar))
 					{
-						string temp;
+						string temp = "";
 						do
 						{
-							temp = askForInputLine(); //prompts for more input
+							temp += askForInputLine(); //prompts for more input
 
 						} while (!containsQuoteAtLastIndex(temp));
 						//keeps asking for more input while user doesn't enter a quotation mark as the last character
+						result += temp;
+						this->tokenize(result);
 					}
 				}
 			}
@@ -193,15 +197,20 @@ private:
 	string askForInputLine() {
 		string line;
 		cout << "\n>> ";
-		cin.ignore();
-		getline(cin, line);
 
+		getline(cin, line);
 		return line;
 	}
 	
 	//returns true if last index is quote
 	bool containsQuoteAtLastIndex(string line) {
-		return (line.at(line.size() - 1) == '"');
+		int lineSize = line.size();
+		const char* matchCase = line.c_str();
+		char lastChar;
+
+		lastChar = line.at(lineSize - 1);
+	
+		return (lastChar == '"');
 	}
 
 	//creates new token and appends it the the vector tokenList

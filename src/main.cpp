@@ -11,7 +11,12 @@
 using namespace std;
 
 int main(){
-	Tokenizer* temp = new Tokenizer(" echo hello && ls -a || cat main.cpp");
+	string input;
+	cout << "do it\n>>";
+
+	getline(cin, input);
+
+	Tokenizer* temp = new Tokenizer(input);
 	
 	for (unsigned i = 0; i < temp->getVector().size(); i++)
 	{
