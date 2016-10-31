@@ -233,6 +233,10 @@ public:
 		parse();	//parses and tokenizes the values into a vector
 		return successfull;
 	}
+	
+	vector<Token*> getVector() {
+		return this->tokenList;
+	}
 };
 
 
