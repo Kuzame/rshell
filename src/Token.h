@@ -18,11 +18,11 @@ private:
 	//"word1 word2 word3" and that it is not an empty string
 	void numWords(string tempValue) {
 		char space = ' ';
-		int index;
+		int index = 0;
 		
 		//if it found a space...
 		if ((index = tempValue.find_first_of(space)) != -1) {
-			++size;
+			this->size += 1;
 		}
 		else {
 			//no more whitespaces, so increment one last time for the last word after (n - 1) whitespace
@@ -38,9 +38,9 @@ private:
 	//removes any leading or ending whitespace from the value
 	void removeWhiteSpace() {
 		string temp = this->getValue();
-		int indexStart = temp.find_first_not_of(" ");		//find first index that is not whitespace
-		int indexEnd = temp.find_last_not_of(" ");			//find last index that is not whitespace
-		temp.substr(indexStart, indexEnd);					//make a substring between the indexStart and indexEnd
+		int indexStart = temp.find_first_not_of(' ');		//find first index that is not whitespace
+		int indexEnd = temp.find_last_not_of(' ');			//find last index that is not whitespace
+		temp = temp.substr(indexStart, indexEnd);					//make a substring between the indexStart and indexEnd
 		this->setValue(temp);								//mutate the original Token->value in tokenList to the new list
 	}
 
@@ -62,6 +62,7 @@ public:
 	//sets values and calls execute in order to generate and format members
 	Token(string value){
 		this->setValue(value);
+		this->setSize(0);	//simply instantiates the  int
 		execute();
 	}
 	~Token(){}
@@ -81,7 +82,10 @@ public:
 
 	bool execute(){
 		bool successfull = true;
-		removeWhiteSpace();
+		if (this->getValue().find_first_of(' ') != -1){
+			removeWhiteSpace();
+		}
+
 		numWords(getValue());
 		return successfull;
 	}

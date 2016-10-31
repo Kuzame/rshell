@@ -27,6 +27,9 @@ private:
 		char nextChar;				//the nextChar used in finding the next character
 
 		while (this->commandStream.get(currentChar)) {
+			//currentChar is the character being tested
+			nextChar = commandStream.peek();
+
 			//case: "
 			//if started a quote execute this to get all values inside the quote without worrying about what is inside of it
 			if (isQuote(currentChar)) {	
@@ -69,7 +72,7 @@ private:
 			}
 
 			//case: |
-			else if (isOr(currentChar) && isOr(commandStream.peek())) {
+			else if (isOr(currentChar) && isOr(nextChar)) {
 				if (result.size() > 0)
 				{
 					tokenize(result);															//creates a Token for result of everything before the '|' was found if there was something there
@@ -85,36 +88,33 @@ private:
 
 			//case: &
 			else if (isAnd(currentChar) && isAnd(commandStream.peek())) {
-				if (result.size() > 0) {
+				if (result.size() > 0)
+				{
 					tokenize(result);															//creates a Token for result of everything before the '&' was found if there was something there
 				}
 
 				commandStream.get(nextChar);													//get the next or
-				result = currentChar + nextChar;												//the result is now the two bars
+				result = currentChar;
+				result += nextChar;																//the result is now the two &&
 				tokenize(result);																//creates a Token for the result
-																								//resets result																	
+				//resets result
 				result = "";
 			}
 
 			//case: everything else
 			else {
-				nextChar = commandStream.peek();
+				/*nextChar = commandStream.peek();*/
 				result += currentChar;
-				if (isNull(nextChar))															//if this is the last character in the line, proceed to tokenize everything that came before that
+				if (isNull(nextChar) && (result.size() > 0))															//if this is the last character in the line, proceed to tokenize everything that came before that
 				{
-					if (result.size() > 0)
-					{
-						tokenize(result);
-					}
-					else {
-						//just continue to terminate without the result being tokenized
-					}
+					
+					tokenize(result);
 				}
-				else {
-					//if the nextChar is not the null terminator
-					commandStream.get(currentChar);
-					result += currentChar;														//simply append the character to the string
-				}
+// 				else {
+// 					//if the nextChar is not the null terminator
+// 					//commandStream.get(currentChar);
+// 					result += currentChar;														//simply append the character to the string
+// 				}
 
 
 			}

@@ -26,7 +26,7 @@ public:
 	//mutator: remove functionality
 	//recieves an index to delete as a value from 0 to tokenContainer.size()
 	void removeAt(int deleteTokenIndex) {
-		if (deleteTokenIndex < tokenContainer.size())
+		if (deleteTokenIndex < (int)tokenContainer.size())
 		{
 			tokenContainer.erase(tokenContainer.begin() + deleteTokenIndex);
 		}
