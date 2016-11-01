@@ -228,8 +228,7 @@ private:
 	
 	//returns true if last index is quote
 	bool containsQuoteAtLastIndex(string line) {
-		int lineSize = line.size();
-		const char* matchCase = line.c_str();
+		int lineSize = (int)line.size();
 		char lastChar;
 
 		lastChar = line.at(lineSize - 1);
