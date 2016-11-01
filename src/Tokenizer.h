@@ -85,8 +85,8 @@ private:
 				if ((result.size() > 0) && (result.find_first_not_of(' ') != -1))			//if not empty and found a character which is not a space
 				{
 					tokenize(result);														//creates a Token for result of everything before the '|' was found if there was something there
-					commandStream.str("");													//makes an empty string be set in stream in order to terminate after
 				}
+				commandStream.str("");													//makes an empty string be set in stream in order to terminate after
 			}
 
 			//case: |
