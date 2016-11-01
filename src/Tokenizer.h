@@ -34,21 +34,29 @@ private:
 			//case: "
 			//if started a quote execute this to get all values inside the quote without worrying about what is inside of it
 			if (isQuote(currentChar)) {	
-				result += currentChar;														//adds character to the string
-
+				//result += currentChar;														//adds character to the string
+				
+				/*commandStream.get(currentChar);*/
 				//command gets the next character and puts it in currentChar and checks if that currentChar is not a quotation mark
-				while (commandStream.get(currentChar) && (!isQuote(currentChar)))			
+				do
 				{
 					result += currentChar;													//appends the next character read to the string result
 					nextChar = commandStream.peek();										//gets the value of the next character to be accessed using get()
-
-					//checks if value of the next character is a quote, if so it stores the value in result since the while loop will exit
-					if (isQuote(nextChar))
-					{
-						commandStream.get(currentChar);
-						result += currentChar;
+					commandStream.get(currentChar);
+					if (currentChar == '"') {
+						result += '"';
 						this->tokenize(result);
+						result = "";
 					}
+					//checks if value of the next character is a quote, if so it stores the value in result since the while loop will exit
+// 					if (isQuote(nextChar))
+// 					{
+// 						commandStream.get(currentChar);
+// 						/*char temp = '"';*/
+// 						result += currentChar;
+// 						//this->tokenize(result);
+// 						//result = "";
+// 					}
 
 					//if the next character is a null terminator for the string stream, but quotation has not been found, ask for more input
 					if (isNull(nextChar))
@@ -62,29 +70,36 @@ private:
 						//keeps asking for more input while user doesn't enter a quotation mark as the last character
 						result += temp;
 						this->tokenize(result);
+						currentChar = '"';
 					}
-				}
+
+				} while (!isQuote(currentChar));
+	
+// 				if (isQuote(currentChar)){
+// 					result += currentChar;
+// 				}
 			}
 
 			//case: #
 			else if (isPound(currentChar)) {
-				if (result.size() > 0)
+				if ((result.size() > 0) && (result.find_first_not_of(' ') != -1))			//if not empty and found a character which is not a space
 				{
-					tokenize(result);															//creates a Token for result of everything before the '|' was found if there was something there
+					tokenize(result);														//creates a Token for result of everything before the '|' was found if there was something there
 					commandStream.str("");													//makes an empty string be set in stream in order to terminate after
 				}
 			}
 
 			//case: |
 			else if (isOr(currentChar) && isOr(nextChar)) {
-				if (result.size() > 0)
+				if ((result.size() > 0) && (result.find_first_not_of(' ') != -1))
 				{
 					tokenize(result);															//creates a Token for result of everything before the '|' was found if there was something there
 				}
 
-				commandStream.get(nextChar);													//get the next or
+				//commandStream.get(nextChar);													//get the next or
 				result = currentChar;
-				result += nextChar;												//the result is now the two pipes
+				this->commandStream.get(nextChar);
+				result += nextChar;																//the result is now the two pipes
 				tokenize(result);																//creates a Token for the result
 																								//resets result
 				result = "";
@@ -92,24 +107,33 @@ private:
 
 			//case: &
 			else if (isAnd(currentChar) && isAnd(commandStream.peek())) {
-				if (result.size() > 0)
+				if ((result.size() > 0) && (result.find_first_not_of(' ') != -1))
 				{
 					tokenize(result);															//creates a Token for result of everything before the '&' was found if there was something there
 				}
 
-				commandStream.get(nextChar);													//get the next or
+				//commandStream.get(nextChar);													//get the next or
 				result = currentChar;
-				result += nextChar;																//the result is now the two &&
+				this->commandStream.get(nextChar);
+				result += nextChar;																//the result is now the two pipes
 				tokenize(result);																//creates a Token for the result
-				//resets result
+																								//resets result
 				result = "";
 			}
-
+			//case: ;
+			else if (isSemicolon(currentChar)){
+				if ((result.size() > 0) && (result.find_first_not_of(' ') != -1))
+				{
+					tokenize(result);															//creates a Token for result of everything before the '&' was found if there was something there
+					result = "";
+				}
+				tokenize(";");
+			}
 			//case: everything else
 			else {
 				/*nextChar = commandStream.peek();*/
 				result += currentChar;
-				if (isNull(nextChar) && (result.size() > 0))															//if this is the last character in the line, proceed to tokenize everything that came before that
+				if (isNull(nextChar) && (result.size() > 0) && (result.find_first_not_of(' ') != -1))		//if this is the last character in the line, proceed to tokenize everything that came before that
 				{
 					
 					tokenize(result);

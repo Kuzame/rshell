@@ -11,7 +11,7 @@ class Token : public Base
 {
 private:
 	string value;
-	vector<const char *> subTokens;
+	vector<string> subTokens;
 	int size;
 	
 	//recursive function to count whitespaces and in turn count number of words
@@ -64,19 +64,11 @@ public:
 		return this->size;
 	}
 
-	vector<const char*> getSubTokensVect() {
-		return (this->subTokens);
+	vector<string> getSubTokensVect() {
+		return this->subTokens;
 	}
 
-	char * getCharPtr() {
-		int num = this->size;
-		char * temp = new char[num];
 
-		for (unsigned i = 0; i < subTokens.size(); i++)
-		{
-			
-		}
-	}
 
 	bool execute(){
 		bool successfull = true;
