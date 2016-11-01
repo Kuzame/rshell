@@ -11,37 +11,25 @@ class Token : public Base
 {
 private:
 	string value;
+	vector<const char *> subTokens;
 	int size;
 	
 	//recursive function to count whitespaces and in turn count number of words
 	//assumes the current member value is in the format of
 	//"word1 word2 word3" and that it is not an empty string
 	void numWords(string tempValue) {
-		char space = ' ';
-		int index = 0;
-		
-		//if it found a space...
-		if ((index = tempValue.find_first_of(space)) != -1) {
-			this->size += 1;
-		}
-		else {
-			//no more whitespaces, so increment one last time for the last word after (n - 1) whitespace
-			this->setSize(size + 1);
-			return;
-		}
-		//passes a substring after the first whitespace
-		string substring = tempValue.substr((index + 1), tempValue.length());
-		numWords(substring);
-
+		this->setSize(subTokens.size());
 	}
 
 	//removes any leading or ending whitespace from the value
 	void removeWhiteSpace() {
-		string temp = this->getValue();
-		int indexStart = temp.find_first_not_of(' ');		//find first index that is not whitespace
-		int indexEnd = temp.find_last_not_of(' ');			//find last index that is not whitespace
-		temp = temp.substr(indexStart, indexEnd + 1);			//make a substring between the indexStart and indexEnd
-		this->setValue(temp);								//mutate the original Token->value in tokenList to the new list
+		stringstream ss(this->getValue());
+		string subStr;
+		while (ss >> subStr)
+		{
+			this->subTokens.push_back(subStr.c_str());
+		}
+				
 	}
 
 	void setValue(string value) {
@@ -76,17 +64,24 @@ public:
 		return this->size;
 	}
 
-	const char * getCharPtr() {
-		return (this->value.c_str());
+	vector<const char*> getSubTokensVect() {
+		return (this->subTokens);
+	}
+
+	char * getCharPtr() {
+		int num = this->size;
+		char * temp = new char[num];
+
+		for (unsigned i = 0; i < subTokens.size(); i++)
+		{
+			
+		}
 	}
 
 	bool execute(){
 		bool successfull = true;
-		if (this->getValue().find_first_of(' ') != -1){
-			removeWhiteSpace();
-		}
+		removeWhiteSpace();
 
-		numWords(getValue());
 		return successfull;
 	}
 };
