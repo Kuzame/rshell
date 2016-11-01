@@ -12,6 +12,7 @@ private:
 	bool previousState;
 	int cases;
 	
+	//fork handlers
 	pid_t child, c;
 	int cstatus;
 	Tokenizer * tokenizer;
