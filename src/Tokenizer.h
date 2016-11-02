@@ -15,6 +15,9 @@ class Tokenizer : public Base{
 private:
 	vector<Token*> tokenList;
 	stringstream commandStream;
+	string regularTokenString;
+	Token * regularToken;
+	bool lastToken;
 
 	void _setVal(string value){
 		commandStream.str(value);
@@ -25,6 +28,7 @@ private:
 		string result;				//the value of a token to be created is stored here
 		char currentChar;			//the currentChar used in traversing through characters
 		char nextChar;				//the nextChar used in finding the next character
+		regularToken = new Token();
 
 		while (this->commandStream.get(currentChar)) {
 			//currentChar is the character being tested
@@ -110,17 +114,28 @@ private:
 				}
 				tokenize(";");
 			}
+			//case: space
+			else if (isSpace(currentChar)) {
+				//do nothing
+				//do not want to tokenize an empty character so we simply tokenize what ever came before it
+				if ((result.size() > 0) && (result.find_first_not_of(' ') != -1)) {
+					tokenize(result);															//creates a Token for result of everything before the '&' was found if there was something there
+					result = "";
+				}
+			}
 			//case: everything else
 			else {
 				/*nextChar = commandStream.peek();*/
 				result += currentChar;
-				if (isNull(nextChar) && (result.size() > 0) && (result.find_first_not_of(' ') != -1)) {		//if this is the last character in the line, proceed to tokenize everything that came before that
-				
-					
+				if (isNull(nextChar) && (result.size() > 0) && (result.find_first_not_of(' ') != -1)) {		//if this is the last character in the line, proceed to tokenize everything that came before that		
 					tokenize(result);
 				}
 			}
 		}
+	}
+
+	bool isSpace(char val) {
+		return val == ' ';
 	}
 
 	bool isQuote(char val) {
@@ -168,7 +183,52 @@ private:
 
 	//creates new token and appends it the the vector tokenList
 	void tokenize(string value){
-		tokenList.push_back(new Token(value));
+// 		tokenList.push_back(new Token(value));
+		if (value == "||")
+		{
+			//push regularToken to the vector for all previous non special tokens
+			tokenList.push_back(regularToken);
+			regularToken = new Token;
+/*			regularTokenString = "";*/
+			//push currentValue
+			tokenList.push_back(new Token(value));
+
+		}
+		else if (value == "&&")
+		{
+			//push regularToken to the vector for all previous non special tokens
+			tokenList.push_back(regularToken);
+			regularToken = new Token;
+/*			regularTokenString = "";*/
+			//push currentValue
+
+			tokenList.push_back(new Token(value));
+		}
+		else if (value == ";")
+		{
+			//push regularToken to the vector for all previous non special tokens
+			tokenList.push_back(regularToken);
+			regularToken = new Token;
+/*			regularTokenString = "";*/
+			//push currentValue
+
+			tokenList.push_back(new Token(value));
+		}
+		else
+		{
+/*			regularTokenString += value;*/
+			
+			regularToken->setValue(value);
+			regularToken->setSize(regularToken->getSize() + 1);
+			
+			char temp = commandStream.peek();
+			if (isNull(temp)){
+				tokenList.push_back(regularToken);
+				regularToken = new Token;
+			
+			}
+		}
+			
 	}
 
 public:

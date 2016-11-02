@@ -5,7 +5,7 @@
 #include "Base.h"
 #include "Token.h"
 #include "Tokenizer.h"
-#include "Executor.h"
+//#include "Executor.h"
 //#include "Executor.h"
 
 using namespace std;
@@ -14,7 +14,7 @@ int main(){
 	string input;
 	bool exitState;
 	Tokenizer * tokenizer = new Tokenizer();
-	Executor * execute = new Executor();
+	//Executor * execute = new Executor();
 
 	cout << "$ ";
 	
@@ -27,17 +27,27 @@ int main(){
 		tokenizer->setVal(input);
 		//executes the tokenizing operation
 		tokenizer->execute();
+		vector<Token *> temp = tokenizer->getVector();
 
-		//sets value inside the execute class
-		execute->setVal(tokenizer);
-		//executes the command operations inside execute
-		exitState = execute->execute();
+		
+// 		//sets value inside the execute class
+// 		execute->setVal(tokenizer);
+// 		//executes the command operations inside execute
+// 		exitState = execute->execute();
+		if (input == "exit")
+		{
+			exitState = false;
+		}
+		else
+		{
+			exitState = true;
+		}
 
 	}
 	while (exitState);
 
 	delete tokenizer;
-	delete execute;
+	//delete execute;
 	
 	//execute->execute();
 //	vector<Token*> tokenizervect = temp->getVector();

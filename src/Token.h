@@ -10,69 +10,68 @@ using namespace std;
 class Token : public Base
 {
 private:
-	string value;
 	vector<string> subTokens;
 	int size;
 	
 	//recursive function to count whitespaces and in turn count number of words
 	//assumes the current member value is in the format of
 	//"word1 word2 word3" and that it is not an empty string
-	void numWords(string tempValue) {
-		this->setSize(subTokens.size());
-	}
 
 	//removes any leading or ending whitespace from the value
-	void removeWhiteSpace() {
-		stringstream ss(this->getValue());
-		string subStr;
-		while (ss >> subStr)
-		{
-			this->subTokens.push_back(subStr.c_str());
-		}
-				
+// 	void removeWhiteSpace() {
+// 		stringstream ss(this->getValue());
+// 		string subStr;
+// 
+// 				
+// 	}
+
+	void _setValue(string value) {
+		this->subTokens.push_back(value);
 	}
 
-	void setValue(string value) {
-		this->value = value;
-	}
-
-	void setSize(int size) {
+	void _setSize(int size) {
 		this->size = size;
 	}
 
 public:
 	//constructors and destructors
 	Token(){
-		this->setValue("");
-		this->setSize(0);
+// 		this->_setValue();
+// 		this->_setSize(0);
 	}
 
 	//sets values and calls execute in order to generate and format members
 	Token(string value){
-		this->setValue(value);
-		this->setSize(0);	//simply instantiates the  int
+ 		this->_setValue(value);
+// 		this->_setSize(0);	//simply instantiates the  int
 		execute();
 	}
 	~Token(){}
 
 	//accessors and mutators
-	string getValue(){
-		return this->value;
-	}
+// 	string getValue(){
+// 		return this->value;
+// 	}
 
 	int getSize() {
-		return this->size;
+		return (int)this->subTokens.size();
 	}
 
 	vector<string> getSubTokensVect() {
 		return this->subTokens;
 	}
 
+	void setValue(string value) {
+		_setValue(value);
+	}
 
+	void setSize(int size) {
+		_setSize(size);
+	}
 
 	bool execute(){
 		bool successfull = true;
-		removeWhiteSpace();
+/*		removeWhiteSpace();*/
 
 		return successfull;
 	}
