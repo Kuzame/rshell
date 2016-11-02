@@ -9,12 +9,12 @@
 class Executor : public Base {
 private:
 	//operators handlers
-	bool previousState;
+	bool previousState, firstTime;
 	int cases;
 	
 	//fork handlers
 	pid_t child, c;
-	int cstatus;
+	int cstatus, getPID;
 	Tokenizer * tokenizer;
 	vector <const char*> commands;
 
@@ -32,27 +32,45 @@ private:
 		// Will yield ERROR if we put: lsa || echoHello && echo hi
 		// Something's wrong because the child is executing its task
 		// Solution: Maybe have something to do with KILL the child's process
-		if ((child = fork())== 0) {					// if it's 0
-			// cout<< "Parent: child "<< getpid()<< " is created"<< "[fork]="<<child<< "\n"; //for debugging
+		if ((isFirstTime())== 0) {					// if it's 0
+			cout<< "Child "<< getpid()<< " calls this: "; //for debugging
 			previousState=execvp(args[0], args);
 			
 			//it should exit by the point above, otherwise it fails (below)
 			previousState=false;
 			cerr<< "Failed to do execvp\n";
 		}
-		else {										// if it's -1
-			if (child == (pid_t)(-1)) {
-				cerr << "Failed to do fork\n";
-			}
-			else {									// if it's positive
-				
-				c = wait(&cstatus);
-				//cout<<"--for debugging-- Parent: child " << c << " exits with status " << cstatus<<endl; // for debugging
-			}
+		else if (child == (pid_t)(-1)) {
+			cerr << "Failed to do fork\n";
 		}
+		else {									// if it's positive
+			do {
+				c = wait(&cstatus);
+			}
+			while (c== -1);
+			cout<<"--for debugging-- Parent: child " << c << " exits. getpid is " << getpid()<<endl; // for debugging
+			cout<<"--killing parent " << getpid() << "!"<<endl; // for debugging
+			//cout<<" kill status: "<< kill(getpid(), SIGKILL)<<endl;
+			
+		}
+		
 		
 		delete * args; //prevent memory leak
     }
+	
+	int isFirstTime() { // so we only will call fork ONCE when we're about to perform execvp, to prevent child reproduction
+//		if (firstTime) {
+//			getPID= getpid();
+//			cout<<"isFirstTime, getpid: "<<getPID<<endl;
+//			//kill(getPID, SIGTERM);
+//			firstTime=false;
+//		}
+		getPID=getpid();
+		child = fork();
+		cout<< "Now child is: " << getpid() << ", parent is: "<<getPID<<endl;
+		//kill(getpid(), SIGCONT);
+		return child;
+	}
 	
 	void vectorSetter(unsigned i) {
 //		for (unsigned j = 0 ; j<tokenizer->getVector().at(i)->getSubTokensVect().size(); j++) {
@@ -80,6 +98,7 @@ public:
     Executor (Tokenizer * tokenizer) {
         this->tokenizer = tokenizer;
         this->previousState=true;
+		this->firstTime=true;
 		this->execute();
     }
     
@@ -107,7 +126,7 @@ public:
 		for (unsigned i = 0; i < tokenizer->getVector().size(); i++)
 		{
 			cases = operatorHandling(i);
-		//	cout << "i="<<i<<" & "<<previousState << " < prevState\n"; //for debugging
+			cout << "-----i="<<i<<" & "<<previousState << " < prevState-----"<< getpid()<<"\n"; //for debugging
 			switch (cases) {
 				case 0: { // case ||
 					if (previousState) {
@@ -137,7 +156,7 @@ public:
 			}
 		}
 		
-		//cout<< "###########  EXIT THE EXECUTE  #############\n";	//for debugging
+		cout<< "###########  EXIT THE EXECUTE  #############\n";	//for debugging
         return true;
     }
 };

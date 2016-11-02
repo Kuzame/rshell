@@ -12,14 +12,25 @@ using namespace std;
 
 int main(){
 	string input;
-	bool exitState=false;
+	bool exitState=true;
 	
 	cout << "$ ";
-
-	getline(cin, input);
-	Tokenizer * temp = new Tokenizer(input);
 	
-	Executor * execute = new Executor(temp);
+	
+	do {
+		getline(cin, input);
+		Tokenizer * temp = new Tokenizer(input);
+		
+		Executor * execute = new Executor(temp);
+//		temp->setVal(input);
+//		temp->execute();
+		exitState=execute->execute();
+		
+		delete temp;
+		delete execute;
+	}
+	while (exitState);
+	
 	//execute->execute();
 //	vector<Token*> tokenizervect = temp->getVector();
 //	
