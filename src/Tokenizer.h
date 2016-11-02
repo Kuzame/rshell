@@ -37,7 +37,7 @@ private:
 					nextChar = commandStream.peek();										//gets the value of the next character to be accessed using get()
 					commandStream.get(currentChar);											//gets the next character in order to check if it is a quotation mark
 					if (currentChar == '"') {
-//						result += '"';
+						result += "\n";	//to be able to add newline in output
 						this->tokenize(result);
 						result = "";
 					}
@@ -52,7 +52,7 @@ private:
 							
 						} while ( (!containsQuoteAtLastIndex(temp)) && ((temp += "\n") == temp));
 						//keeps asking for more input while user doesn't enter a quotation mark as the last character
-						int eraseQuote = (int)temp.find_first_of('"');
+						int eraseQuote = temp.length() - 1; //we know last character in the string contains quotation mark by previous conditions
 						// erase the actual quotation mark, so it's not included in the token
 						temp.erase(eraseQuote);
 						result += temp;
