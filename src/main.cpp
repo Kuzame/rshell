@@ -14,7 +14,7 @@ int main(){
 	//extra credit part, components needed for getting user's username and local machine's name
 	string userLogin, result;
 	int charSize=100;
-	char localhost[charSize];
+	char * localhost = new char [charSize];
 	int validHost = gethostname(localhost, charSize);
 	struct passwd *pwd = getpwuid(getuid());
 	
@@ -70,6 +70,6 @@ int main(){
 //		}
 //	}
 
-	system("pause");
+//	system("pause");
 	return 0;
 }

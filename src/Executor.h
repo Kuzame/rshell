@@ -21,9 +21,9 @@ private:
 	
 	void executor (unsigned i) {
 		int size = (int) tokenizer->getVector().at(i)->getSubTokensVect().size();
-		char * args [size+1];
+		char ** args = new char * [size+1];
 		
-		for (unsigned j = 0 ; j< size; j++) {
+		for (unsigned j = 0 ; j< (unsigned)size; j++) {
 			args[j] = new char [tokenizer->getVector().at(i)->getSubTokensVect().at(j).size()];
 			strcpy(args[j], tokenizer->getVector().at(i)->getSubTokensVect().at(j).c_str());
 		}
