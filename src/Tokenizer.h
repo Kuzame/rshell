@@ -231,12 +231,27 @@ private:
 			
 	}
 
+
+	void clear() {
+		delete regularToken;
+
+		//delete vector<Token *> objects
+		for (int i = 0; i < tokenList.size(); i++) {
+			delete tokenList.at(i);
+		}
+	}
+
 public:
 
 	Tokenizer(){ _setVal(""); }
 	Tokenizer(string value){
 		_setVal(value);
 		execute();
+	}
+	~Tokenizer() {
+
+		//delete regularToken pointer
+		clear();
 	}
 
 	void setVal(string value) {
@@ -247,6 +262,7 @@ public:
 		parse();	//parses and tokenizes the values into a vector
 		return true;
 	}
+
 	
 	vector<Token*> getVector() {
 		return this->tokenList;

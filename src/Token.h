@@ -42,9 +42,8 @@ public:
 
 	//sets values and calls execute in order to generate and format members
 	Token(string value){
- 		this->_setValue(value);
-// 		this->_setSize(0);	//simply instantiates the  int
-		execute();
+		this->_setValue(value);
+		// 		this->_setSize(0);	//simply instantiates the  int
 	}
 	~Token(){}
 
@@ -69,11 +68,13 @@ public:
 		_setSize(size);
 	}
 
-	bool execute(){
-		bool successfull = true;
-/*		removeWhiteSpace();*/
+	string at(int i) {
+		string temp = subTokens.at(i);
+		return temp;
+	}
 
-		return successfull;
+	bool execute(){
+		return true;
 	}
 };
 
