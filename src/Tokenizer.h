@@ -32,30 +32,30 @@ private:
 			if (isQuote(currentChar)) {	
 
 				do {
-					if (currentChar != '"') result += currentChar;												//not include the actual quotation mark
-																			//appends the next character read to the string result
+					//result += currentChar;													//appends the next character read to the string result
 					nextChar = commandStream.peek();										//gets the value of the next character to be accessed using get()
 					commandStream.get(currentChar);											//gets the next character in order to check if it is a quotation mark
 					if (currentChar == '"') {
-						result += "\n";	//to be able to add newline in output
-						this->tokenize(result);
-						result = "";
+						
+						result += '\n';
+						//this->tokenize(result);
 					}
 
 					//if the next character is a null terminator for the string stream, but quotation has not been found, ask for more input
 					if (isNull(nextChar))
 					{
+						string newline = "\n";
 						string temp = "";
 						do
 						{
 							temp += askForInputLine(); //prompts for more input
-							
-						} while ( (!containsQuoteAtLastIndex(temp)) && ((temp += "\n") == temp));
+
+						} while ((!containsQuoteAtLastIndex(temp)) && ((temp += newline) == temp));
 						//keeps asking for more input while user doesn't enter a quotation mark as the last character
-						int eraseQuote = temp.length() - 1; //we know last character in the string contains quotation mark by previous conditions
-						// erase the actual quotation mark, so it's not included in the token
-						temp.erase(eraseQuote);
 						result += temp;
+						int lastQuote = result.length() - 1;
+						//result.erase(0);			//erases index zero because it contains a quotation mark 
+						result.erase(lastQuote);	//erase last quotation mark
 						this->tokenize(result);
 						currentChar = '"';
 					}
