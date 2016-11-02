@@ -10,14 +10,13 @@
 
 using namespace std;
 
-class Tokenizer : public Base
-{
+class Tokenizer : public Base{
 	
 private:
 	vector<Token*> tokenList;
 	stringstream commandStream;
 
-	void setVal(string value){
+	void _setVal(string value){
 		commandStream.str(value);
 	}
 
@@ -34,29 +33,16 @@ private:
 			//case: "
 			//if started a quote execute this to get all values inside the quote without worrying about what is inside of it
 			if (isQuote(currentChar)) {	
-				//result += currentChar;														//adds character to the string
-				
-				/*commandStream.get(currentChar);*/
-				//command gets the next character and puts it in currentChar and checks if that currentChar is not a quotation mark
-				do
-				{
+
+				do {
 					result += currentChar;													//appends the next character read to the string result
 					nextChar = commandStream.peek();										//gets the value of the next character to be accessed using get()
-					commandStream.get(currentChar);
+					commandStream.get(currentChar);											//gets the next character in order to check if it is a quotation mark
 					if (currentChar == '"') {
 						result += '"';
 						this->tokenize(result);
 						result = "";
 					}
-					//checks if value of the next character is a quote, if so it stores the value in result since the while loop will exit
-// 					if (isQuote(nextChar))
-// 					{
-// 						commandStream.get(currentChar);
-// 						/*char temp = '"';*/
-// 						result += currentChar;
-// 						//this->tokenize(result);
-// 						//result = "";
-// 					}
 
 					//if the next character is a null terminator for the string stream, but quotation has not been found, ask for more input
 					if (isNull(nextChar))
@@ -74,16 +60,12 @@ private:
 					}
 
 				} while (!isQuote(currentChar));
-	
-// 				if (isQuote(currentChar)){
-// 					result += currentChar;
-// 				}
 			}
 
 			//case: #
 			else if (isPound(currentChar)) {
-				if ((result.size() > 0) && (result.find_first_not_of(' ') != -1))			//if not empty and found a character which is not a space
-				{
+				if ((result.size() > 0) && (result.find_first_not_of(' ') != -1)) {			//if not empty and found a character which is not a space
+				
 					tokenize(result);														//creates a Token for result of everything before the '|' was found if there was something there
 				}
 				commandStream.str("");													//makes an empty string be set in stream in order to terminate after
@@ -91,12 +73,11 @@ private:
 
 			//case: |
 			else if (isOr(currentChar) && isOr(nextChar)) {
-				if ((result.size() > 0) && (result.find_first_not_of(' ') != -1))
-				{
+				if ((result.size() > 0) && (result.find_first_not_of(' ') != -1)) {
+			
 					tokenize(result);															//creates a Token for result of everything before the '|' was found if there was something there
 				}
 
-				//commandStream.get(nextChar);													//get the next or
 				result = currentChar;
 				this->commandStream.get(nextChar);
 				result += nextChar;																//the result is now the two pipes
@@ -107,8 +88,8 @@ private:
 
 			//case: &
 			else if (isAnd(currentChar) && isAnd(commandStream.peek())) {
-				if ((result.size() > 0) && (result.find_first_not_of(' ') != -1))
-				{
+				if ((result.size() > 0) && (result.find_first_not_of(' ') != -1)) {
+				
 					tokenize(result);															//creates a Token for result of everything before the '&' was found if there was something there
 				}
 
@@ -121,9 +102,9 @@ private:
 				result = "";
 			}
 			//case: ;
-			else if (isSemicolon(currentChar)){
-				if ((result.size() > 0) && (result.find_first_not_of(' ') != -1))
-				{
+			else if (isSemicolon(currentChar)) {
+				if ((result.size() > 0) && (result.find_first_not_of(' ') != -1)) {
+	
 					tokenize(result);															//creates a Token for result of everything before the '&' was found if there was something there
 					result = "";
 				}
@@ -133,64 +114,13 @@ private:
 			else {
 				/*nextChar = commandStream.peek();*/
 				result += currentChar;
-				if (isNull(nextChar) && (result.size() > 0) && (result.find_first_not_of(' ') != -1))		//if this is the last character in the line, proceed to tokenize everything that came before that
-				{
+				if (isNull(nextChar) && (result.size() > 0) && (result.find_first_not_of(' ') != -1)) {		//if this is the last character in the line, proceed to tokenize everything that came before that
+				
 					
 					tokenize(result);
 				}
-// 				else {
-// 					//if the nextChar is not the null terminator
-// 					//commandStream.get(currentChar);
-// 					result += currentChar;														//simply append the character to the string
-// 				}
-
-
 			}
 		}
-
-
-
-		
-/*------10/24/16
-		//precedence level 2
-		if ((or = token.find_first_of("||")) != -1)
-		{
-		}
-
-		//at this point of recursion all of the 
-
-		//precedence level 2
-		if ((and = token.find_first_of("&&")) != -1)
-		{
-		}
-
-		//create string stream for getting individual strings out of the larger string
-		//setVal(commands);
-		//commandStream
-	*/	
-	/*
-			size_t index;
-			comment = token.find("#");
-			semicolon = token.find(";");
-			or = token.find("||");
-			and = token.find("&&");
-			if (comment != -1)
-			{
-				index = token.find_first_of("#");
-				//push to vector the string to the left of the index
-				//truncate string to only have first part of the string before that index with the # and simply get rid of code after #
-			}
-			else if (semicolon != -1)
-			{
-				index = token.find_first_of(";");
-				//push to the vector anything to the left of the semicolon and renintiate tokenize for whatever is in the right; perhaps recursive calling the function
-			}
-			else if (semicolon != -1)
-			{
-				//push to the vector anything to the left of the semicolon and renintiate tokenize for whatever is in the right; perhaps recursive calling the function
-			}
-			*/
-			
 	}
 
 	bool isQuote(char val) {
@@ -240,30 +170,22 @@ private:
 	void tokenize(string value){
 		tokenList.push_back(new Token(value));
 	}
-	//moved to Token.h
-	//cleans up the whitespace in the tokenList Tokens
-// 	void removeWhiteSpace(){
-// 		for (unsigned i = 0; i < this->tokenList.size(); i++){
-// 			string temp = this->tokenList.at(i)->getValue();
-// 			int indexStart = temp.find_first_not_of(" ");		//find first index that is not whitespace
-// 			int indexEnd = temp.find_last_not_of(" ");			//find last index that is not whitespace
-// 			temp.substr(indexStart, indexEnd);					//make a substrinng between the indexStart and indexEnd
-// 			tokenList.at(i)->setValue(temp);					//mutate the original Token->value in tokenList to the new list
-// 		}
-//		}
 
 public:
 
-	Tokenizer(){ setVal(""); }
+	Tokenizer(){ _setVal(""); }
 	Tokenizer(string value){
-		setVal(value);
+		_setVal(value);
 		execute();
 	}
 
+	void setVal(string value) {
+		_setVal(value);
+	}
+
 	bool execute(){
-		bool successfull = true;
 		parse();	//parses and tokenizes the values into a vector
-		return successfull;
+		return true;
 	}
 	
 	vector<Token*> getVector() {

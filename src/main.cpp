@@ -12,24 +12,32 @@ using namespace std;
 
 int main(){
 	string input;
-	bool exitState=true;
-	
+	bool exitState;
+	Tokenizer * tokenizer = new Tokenizer();
+	Executor * execute = new Executor();
+
 	cout << "$ ";
 	
 	
 	do {
+		//gets next command
 		getline(cin, input);
-		Tokenizer * temp = new Tokenizer(input);
 		
-		Executor * execute = new Executor(temp);
-//		temp->setVal(input);
-//		temp->execute();
-		exitState=execute->execute();
-		
-		delete temp;
-		delete execute;
+		//sets value inside toknizer class
+		tokenizer->setVal(input);
+		//executes the tokenizing operation
+		tokenizer->execute();
+
+		//sets value inside the execute class
+		execute->setVal(tokenizer);
+		//executes the command operations inside execute
+		exitState = execute->execute();
+
 	}
 	while (exitState);
+
+	delete tokenizer;
+	delete execute;
 	
 	//execute->execute();
 //	vector<Token*> tokenizervect = temp->getVector();

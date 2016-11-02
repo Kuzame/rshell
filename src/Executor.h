@@ -2,8 +2,8 @@
 #define EXECUTOR_H
 
 #include <sys/types.h>
-#include <sys/wait.h>
-#include <unistd.h>
+//#include <sys/wait.h>
+//#include <unistd.h>
 #include <signal.h>
 
 class Executor : public Base {
@@ -13,7 +13,7 @@ private:
 	int cases;
 	
 	//fork handlers
-	pid_t child, c;
+	//pid_t child, c;
 	int cstatus, getPID;
 	Tokenizer * tokenizer;
 	vector <const char*> commands;
