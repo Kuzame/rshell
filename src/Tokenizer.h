@@ -49,8 +49,8 @@ private:
 						do
 						{
 							temp += askForInputLine(); //prompts for more input
-
-						} while (!containsQuoteAtLastIndex(temp));
+							
+						} while ( (!containsQuoteAtLastIndex(temp)) && ((temp += "\n") == temp));
 						//keeps asking for more input while user doesn't enter a quotation mark as the last character
 						int eraseQuote = (int)temp.find_first_of('"');
 						// erase the actual quotation mark, so it's not included in the token
