@@ -1,6 +1,6 @@
 #ifndef EXECUTOR_H
 #define EXECUTOR_H
-
+#include<stdlib.h>
 
 class Executor : public Base {
 private:
@@ -84,7 +84,8 @@ private:
 		else if (tokenizer->getVector().at(i)->getSubTokensVect().at(0) == "exit") {
 			return 3; // 3 is for exit
 		}
-		else if (tokenizer->getVector().at(i)->getSubTokensVect().at(0) == "EOF") {
+		else if (tokenizer->getVector().at(i)->getSubTokensVect().at(0) == "") {
+			exit(0);
 			return 99; // Meant to be for EOF or Ctrl+D...
 		}
 		else return 4; // 3 is for normal operation
