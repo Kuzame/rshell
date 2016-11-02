@@ -32,11 +32,12 @@ private:
 			if (isQuote(currentChar)) {	
 
 				do {
-					result += currentChar;													//appends the next character read to the string result
+					if (currentChar != '"') result += currentChar;												//not include the actual quotation mark
+																			//appends the next character read to the string result
 					nextChar = commandStream.peek();										//gets the value of the next character to be accessed using get()
 					commandStream.get(currentChar);											//gets the next character in order to check if it is a quotation mark
 					if (currentChar == '"') {
-						result += '"';
+//						result += '"';
 						this->tokenize(result);
 						result = "";
 					}
@@ -51,6 +52,9 @@ private:
 
 						} while (!containsQuoteAtLastIndex(temp));
 						//keeps asking for more input while user doesn't enter a quotation mark as the last character
+						int eraseQuote = (int)temp.find_first_of('"');
+						// erase the actual quotation mark, so it's not included in the token
+						temp.erase(eraseQuote);
 						result += temp;
 						this->tokenize(result);
 						currentChar = '"';
