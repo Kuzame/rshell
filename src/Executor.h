@@ -1,23 +1,18 @@
 #ifndef EXECUTOR_H
 #define EXECUTOR_H
 
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <unistd.h>
-#include <signal.h>
 
 class Executor : public Base {
 private:
-	//operators handlers
-	bool previousState, firstTime;
-	int cases;
+	//operator (connector) handlers
+	bool previousState, firstTime; //previousState is for the connector to peek back whether the prev state is true/false
+	int cases; //for the switch statement
 	
 	//fork handlers
 	int pip[2]; // for closing cases on pipe
-	pid_t child, c; //c is needed for testing, unnecessary for actual codes
-	int cstatus, getPID; //getPID is also needed for testing to determine's the parent's ID
-	Tokenizer * tokenizer;
-	vector <const char*> commands;
+	pid_t child, c; //fork's value will be stored inside of the child, and c is used for waiting
+	int cstatus, getPID; //cstatus is very crucial to determine the state of previousState (connector handlers)
+	Tokenizer * tokenizer; //a temporary variable that points to the actual tokenizer given from class Tokenizer
 	
 	void executor (unsigned i) {
 		int size = (int) tokenizer->getVector().at(i)->getSubTokensVect().size();
@@ -30,7 +25,7 @@ private:
 		
 		args[size] = NULL; // putting NULL at the end of arguments, so execvp knows when to stop reading
 		
-		if ((isFirstTime())== 0) {					// if it's 0
+		if ((isFirstTime())== 0) {				// if it's 0, this should be accessed by a newborn child!
 			close(pip[0]);
 			//cout<< "Child "<< getpid()<< " calls this: "; //for debugging
 			previousState=execvp(args[0], args);
@@ -38,13 +33,13 @@ private:
 			//it should exit by the point above, otherwise it fails (below)
 			previousState=false;
 			cerr<< "Failed to do execvp!\n";
-			kill(getpid(), SIGKILL);	//VERY IMPORTANT: kill the child that has failed to do execvp
+			kill(getpid(), SIGKILL);	//VERY IMPORTANT: kill the child that has failed to do execvp.. killing it without mercy is fine
 			close(pip[1]);
 		}
-		else if (child == (pid_t)(-1)) {
+		else if (child == (pid_t)(-1)) {		// POSSIBLE to happen.. may make your system crash (happened to me when debugging)
 			cerr << "Failed to do fork\n";
 		}
-		else {									// if it's positive
+		else {									// if it's positive, this should be accessed by parent process(es)
 			close(pip[1]);
 			do {
 				c = wait(&cstatus);
@@ -52,9 +47,7 @@ private:
 			while (c== -1);
 			if (cstatus!=0) previousState=false;	//determine the status of whether the child's execvp failed/not here
 			else previousState=true;
-			//cout<<"--for debugging-- Parent: child " << c << " exits. getpid is " << getpid()<<endl; // for debugging
-			//cout<<"--killing parent " << getpid() << "!"<<endl; // for debugging
-			//cout<<" kill status: "<< kill(getpid(), SIGKILL)<<endl;
+			//cout<<"Parent said: child " << c << " exits. Now back to parent: " << getpid()<<endl; // for debugging
 			close(pip[0]);
 			
 		}
@@ -63,59 +56,42 @@ private:
 		delete * args; //prevent memory leak
 	}
 	
-	int isFirstTime() { // so we only will call fork ONCE set the pipe for the parent, to prevent child "reproduction"`
+	int isFirstTime() { // this is just to set up a pipe
 		if (firstTime) {
 			pipe(pip);
 			child = fork();
 			//cout<<"isFirstTime, getpid: "<<getPID<<endl;
-			//kill(getPID, SIGTERM);
-			firstTime=false;
+			firstTime=false;	//will never access this IF anymore.. ever..
 			return child;
 		}
 		else {
-			getPID= getpid();
 			child = fork();
 			//cout<< "Now child is: " << getpid() << ", parent is: "<<getPID<<endl; //for debugging
-			//kill(getpid(), SIGCONT);
 			return child;
 		}
-	}
-	
-	void vectorSetter(unsigned i) {
-		//		for (unsigned j = 0 ; j<tokenizer->getVector().at(i)->getSubTokensVect().size(); j++) {
-		//			commands.push_back(tokenizer->getVector().at(i)->getSubTokensVect().at(j));
-		//		}
 	}
 	
 	int operatorHandling (unsigned i) {
 		if (tokenizer->getVector().at(i)->getSubTokensVect().at(0) == "||") {
-			//cout << "is ||!";
 			return 0; // 0 is for OR
 		}
 		else if (tokenizer->getVector().at(i)->getSubTokensVect().at(0) == "&&") {
-			//cout << "is &&!";
 			return 1; // 1 is for AND
 		}
 		else if (tokenizer->getVector().at(i)->getSubTokensVect().at(0) == ";") {
-			//cout << "is ;!";
 			return 2; // 2 is for Semicolon
 		}
 		else if (tokenizer->getVector().at(i)->getSubTokensVect().at(0) == "exit") {
-			//cout << "is ;!";
 			return 3; // 3 is for exit
 		}
 		else if (tokenizer->getVector().at(i)->getSubTokensVect().at(0) == "EOF") {
-			//cout << "is ;!";
-			return 99; // 3 is for exit
+			return 99; // Meant to be for EOF or Ctrl+D...
 		}
 		else return 4; // 3 is for normal operation
 	}
 	
 public:
-	Executor () {
-//		this->tokenizer = NULL;
-	}
-	
+	Executor () {}
 	Executor (Tokenizer * tokenizer) {
 		this->tokenizer = tokenizer;
 		this->previousState=true;
@@ -124,26 +100,10 @@ public:
 	}
 	
 	void setTokenizer (Tokenizer * tokenizer) {
-//		delete this->tokenizer;
 		this->tokenizer = tokenizer;
 		this->previousState=true;
 		this->firstTime=true;
 	}
-	
-//	void print () {
-//		for (unsigned i = 0; i < tokenizer->getVector().size(); i++)
-//		{
-//			cout <<  tokenizer->getVector().at(i)->getValue() << "\n";
-//		}
-//	}
-	//
-	//    void printCommands() {
-	//        whiteSpaceHandler(0);
-	//        for (unsigned i = 0; i < command.size(); i++)
-	//        {
-	//            cout << "."<< command.at(i) << ".\n";
-	//        }
-	//    }
 	
 	bool execute() {
 		// cout<< "tokenizer's size is " << tokenizer->getVector().size()<<endl; // for debugging
@@ -154,35 +114,33 @@ public:
 			switch (cases) {
 				case 0: { // case ||
 					if (previousState) {
-						i++;
+						i++;		//should skip the next token if the previousState is true
 					}
 					else previousState=true;
 				}; break;
 					
 				case 1: { // case &&
 					if (previousState) {
-						//treat this and as if it's a semicolon
+									//if it's true, treat this and as if it's a semicolon
 					}
 					else i++;
 				}; break;
 					
 				case 2: { // case ;
 					previousState=true;
-					// do nothing for this token, aka move on without any condition
+									// do nothing for this token, aka move on and assume previous state condition is true
 				}; break;
 					
 				case 3: { // case exit
-					return false;
+					return false;	//force exit this for loop
 				}
 					
 				case 4: { // case normal operations
 					if (previousState) {
-						vectorSetter(i);
-						executor(i);
+						executor(i);//present the tokens to execvp
 					}
 				}; break;
-				
-				default: cout<< "Something is wrong#@!\n"; break;
+				default: cout<< "Something is wrong#@!\n"; break; //we shouldn't ever get here unless someone hacks the memory..
 			}
 		}
 		

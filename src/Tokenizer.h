@@ -1,12 +1,5 @@
 #ifndef _TOKENIZER_H_
 #define _TOKENIZER_H_
-#include <iostream>
-#include <string>
-#include <sstream>
-#include <vector>
-#include <cstring>
-#include "Base.h"
-#include "Token.h"
 
 using namespace std;
 

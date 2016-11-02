@@ -1,17 +1,23 @@
 #include <iostream>
+#include <cstring>
 #include <string>
 #include <sstream>
 #include <vector>
+#include <pwd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
+#include <signal.h>
 #include "Base.h"
 #include "Token.h"
 #include "Tokenizer.h"
 #include "Executor.h"
-#include <pwd.h>
 
 using namespace std;
 
 int main(){
-	//extra credit part, components needed for getting user's username and local machine's name
+	//----- <part extra credit> -----
+	//Components needed for getting user's username and local machine's name
 	string userLogin, result;
 	int charSize=100;
 	char * localhost = new char [charSize];
@@ -26,6 +32,8 @@ int main(){
 		cerr<< "Failed to obtain user's username and local machine's name\n";
 		result = "$ ";
 	}
+	//----- </part extra credit> -----
+	
 	
 	//Basics needed to perform rshell
 	string input;
@@ -54,7 +62,8 @@ int main(){
 		input = '\0';
 	}
 	while (exitState);
-
+	
+	cout<< "The program exits!\n";
 	//delete execute;
 	
 	//execute->execute();
