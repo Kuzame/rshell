@@ -13,7 +13,7 @@ private:
 	int cases;
 	
 	//fork handlers
-	int pip[2];
+	int pip[2]; // for closing cases on pipe
 	pid_t child, c; //c is needed for testing, unnecessary for actual codes
 	int cstatus, getPID; //getPID is also needed for testing to determine's the parent's ID
 	Tokenizer * tokenizer;
