@@ -68,7 +68,7 @@ private:
 
 			//case: #
 			else if (isPound(currentChar)) {
-				if ((result.size() > 0) && (result.find_first_not_of(' ') != -1)) {			//if not empty and found a character which is not a space
+				if (((int)result.size() > 0) && (result.find_first_not_of(' ') != -1)) {			//if not empty and found a character which is not a space
 				
 					tokenize(result);														//creates a Token for result of everything before the '|' was found if there was something there
 				}
@@ -77,7 +77,7 @@ private:
 
 			//case: |
 			else if (isOr(currentChar) && isOr(nextChar)) {
-				if ((result.size() > 0) && (result.find_first_not_of(' ') != -1)) {
+				if (((int)result.size() > 0) && (result.find_first_not_of(' ') != -1)) {
 			
 					tokenize(result);															//creates a Token for result of everything before the '|' was found if there was something there
 				}
@@ -92,7 +92,7 @@ private:
 
 			//case: &
 			else if (isAnd(currentChar) && isAnd(commandStream.peek())) {
-				if ((result.size() > 0) && (result.find_first_not_of(' ') != -1)) {
+				if (((int)result.size() > 0) && (result.find_first_not_of(' ') != -1)) {
 				
 					tokenize(result);															//creates a Token for result of everything before the '&' was found if there was something there
 				}
@@ -107,7 +107,7 @@ private:
 			}
 			//case: ;
 			else if (isSemicolon(currentChar)) {
-				if ((result.size() > 0) && (result.find_first_not_of(' ') != -1)) {
+				if (((int)result.size() > 0) && (result.find_first_not_of(' ') != -1)) {
 	
 					tokenize(result);															//creates a Token for result of everything before the '&' was found if there was something there
 					result = "";
@@ -118,7 +118,7 @@ private:
 			else if (isSpace(currentChar)) {
 				//do nothing
 				//do not want to tokenize an empty character so we simply tokenize what ever came before it
-				if ((result.size() > 0) && (result.find_first_not_of(' ') != -1)) {
+				if (((int)result.size() > 0) && (result.find_first_not_of(' ') != -1)) {
 					tokenize(result);															//creates a Token for result of everything before the '&' was found if there was something there
 					result = "";
 				}
@@ -127,7 +127,7 @@ private:
 			else {
 				/*nextChar = commandStream.peek();*/
 				result += currentChar;
-				if (isNull(nextChar) && (result.size() > 0) && (result.find_first_not_of(' ') != -1)) {		//if this is the last character in the line, proceed to tokenize everything that came before that		
+				if (isNull(nextChar) && ((int)result.size() > 0) && (result.find_first_not_of(' ') != -1)) {		//if this is the last character in the line, proceed to tokenize everything that came before that		
 					tokenize(result);
 				}
 			}
@@ -183,14 +183,12 @@ private:
 
 	//creates new token and appends it the the vector tokenList
 	void tokenize(string value){
-// 		tokenList.push_back(new Token(value));
 		if (value == "||")
 		{
 			//push regularToken to the vector for all previous non special tokens
 			tokenList.push_back(regularToken);
 			regularToken = new Token;
-/*			regularTokenString = "";*/
-			//push currentValue
+
 			tokenList.push_back(new Token(value));
 
 		}
@@ -199,7 +197,7 @@ private:
 			//push regularToken to the vector for all previous non special tokens
 			tokenList.push_back(regularToken);
 			regularToken = new Token;
-/*			regularTokenString = "";*/
+
 			//push currentValue
 
 			tokenList.push_back(new Token(value));
@@ -209,17 +207,15 @@ private:
 			//push regularToken to the vector for all previous non special tokens
 			tokenList.push_back(regularToken);
 			regularToken = new Token;
-/*			regularTokenString = "";*/
+
 			//push currentValue
 
 			tokenList.push_back(new Token(value));
 		}
 		else
 		{
-/*			regularTokenString += value;*/
 			
-			regularToken->setValue(value);
-			regularToken->setSize(regularToken->getSize() + 1);
+			regularToken->appendValue(value);
 			
 			char temp = commandStream.peek();
 			if (isNull(temp)){
@@ -235,8 +231,7 @@ private:
 	void clear() {
 		delete regularToken;
 
-		//delete vector<Token *> objects
-		for (int i = 0; i < tokenList.size(); i++) {
+		for (unsigned i = 0; i < tokenList.size(); i++) {
 			delete tokenList.at(i);
 		}
 	}
