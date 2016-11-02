@@ -68,7 +68,7 @@ private:
 
 			//case: #
 			else if (isPound(currentChar)) {
-				if (((int)result.size() > 0) && (result.find_first_not_of(' ') != -1)) {			//if not empty and found a character which is not a space
+				if (((int)result.size() > 0) && ((int)result.find_first_not_of(' ') != -1)) {			//if not empty and found a character which is not a space
 				
 					tokenize(result);														//creates a Token for result of everything before the '|' was found if there was something there
 				}
@@ -77,7 +77,7 @@ private:
 
 			//case: |
 			else if (isOr(currentChar) && isOr(nextChar)) {
-				if (((int)result.size() > 0) && (result.find_first_not_of(' ') != -1)) {
+				if (((int)result.size() > 0) && ((int)result.find_first_not_of(' ') != -1)) {
 			
 					tokenize(result);															//creates a Token for result of everything before the '|' was found if there was something there
 				}
@@ -92,7 +92,7 @@ private:
 
 			//case: &
 			else if (isAnd(currentChar) && isAnd(commandStream.peek())) {
-				if (((int)result.size() > 0) && (result.find_first_not_of(' ') != -1)) {
+				if (((int)result.size() > 0) && ((int)result.find_first_not_of(' ') != -1)) {
 				
 					tokenize(result);															//creates a Token for result of everything before the '&' was found if there was something there
 				}
@@ -107,7 +107,7 @@ private:
 			}
 			//case: ;
 			else if (isSemicolon(currentChar)) {
-				if (((int)result.size() > 0) && (result.find_first_not_of(' ') != -1)) {
+				if (((int)result.size() > 0) && ((int)result.find_first_not_of(' ') != -1)) {
 	
 					tokenize(result);															//creates a Token for result of everything before the '&' was found if there was something there
 					result = "";
@@ -118,7 +118,7 @@ private:
 			else if (isSpace(currentChar)) {
 				//do nothing
 				//do not want to tokenize an empty character so we simply tokenize what ever came before it
-				if (((int)result.size() > 0) && (result.find_first_not_of(' ') != -1)) {
+				if (((int)result.size() > 0) && ((int)result.find_first_not_of(' ') != -1)) {
 					tokenize(result);															//creates a Token for result of everything before the '&' was found if there was something there
 					result = "";
 				}
@@ -127,7 +127,7 @@ private:
 			else {
 				/*nextChar = commandStream.peek();*/
 				result += currentChar;
-				if (isNull(nextChar) && ((int)result.size() > 0) && (result.find_first_not_of(' ') != -1)) {		//if this is the last character in the line, proceed to tokenize everything that came before that		
+				if (isNull(nextChar) && ((int)result.size() > 0) && ((int)result.find_first_not_of(' ') != -1)) {		//if this is the last character in the line, proceed to tokenize everything that came before that		
 					tokenize(result);
 				}
 			}
