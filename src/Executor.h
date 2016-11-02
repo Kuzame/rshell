@@ -38,6 +38,7 @@ private:
 			//it should exit by the point above, otherwise it fails (below)
 			previousState=false;
 			cerr<< "Failed to do execvp!\n";
+			kill(getpid(), SIGKILL);	//VERY IMPORTANT: kill the child that has failed to do execvp
 			close(pip[1]);
 		}
 		else if (child == (pid_t)(-1)) {
@@ -49,6 +50,8 @@ private:
 				c = wait(&cstatus);
 			}
 			while (c== -1);
+			if (cstatus!=0) previousState=false;	//determine the status of whether the child's execvp failed/not here
+			else previousState=true;
 			//cout<<"--for debugging-- Parent: child " << c << " exits. getpid is " << getpid()<<endl; // for debugging
 			//cout<<"--killing parent " << getpid() << "!"<<endl; // for debugging
 			//cout<<" kill status: "<< kill(getpid(), SIGKILL)<<endl;
@@ -63,7 +66,6 @@ private:
 	int isFirstTime() { // so we only will call fork ONCE set the pipe for the parent, to prevent child "reproduction"`
 		if (firstTime) {
 			pipe(pip);
-			getPID= getpid();
 			child = fork();
 			//cout<<"isFirstTime, getpid: "<<getPID<<endl;
 			//kill(getPID, SIGTERM);
@@ -71,7 +73,7 @@ private:
 			return child;
 		}
 		else {
-			getPID=getpid();
+			getPID= getpid();
 			child = fork();
 			//cout<< "Now child is: " << getpid() << ", parent is: "<<getPID<<endl; //for debugging
 			//kill(getpid(), SIGCONT);
@@ -101,6 +103,10 @@ private:
 		else if (tokenizer->getVector().at(i)->getSubTokensVect().at(0) == "exit") {
 			//cout << "is ;!";
 			return 3; // 3 is for exit
+		}
+		else if (tokenizer->getVector().at(i)->getSubTokensVect().at(0) == "EOF") {
+			//cout << "is ;!";
+			return 99; // 3 is for exit
 		}
 		else return 4; // 3 is for normal operation
 	}
