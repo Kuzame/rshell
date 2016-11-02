@@ -26,7 +26,8 @@ public:
 	Token(string value){
 		this->appendValue(value);
 	}
-	~Token(){}
+	~Token(){ 
+    }
 
 	int getSize() {
 		return ((int)this->subTokens.size());

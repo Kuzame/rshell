@@ -31,7 +31,7 @@ int main(){
 	string input;
 	bool exitState=true;
 	Executor * execute = new Executor();
-	
+    //Tokenizer * tokenizer = new Tokenizer;	
 	do {
 		cout << result; //printing the extra credit here
 		//gets next command

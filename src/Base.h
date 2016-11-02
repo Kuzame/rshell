@@ -7,6 +7,9 @@ class Base
 {
 protected:
     virtual bool execute() = 0;
+
+public:
+    virtual ~Base(){}
 };
 
 #endif
