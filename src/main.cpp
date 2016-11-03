@@ -1,3 +1,9 @@
+/*	
+ [This rshell is created by:]
+ Adrian Harminto
+ Mario Salazar
+*/
+
 #include <iostream>
 #include <cstring>
 #include <string>
@@ -21,14 +27,14 @@ int main(){
 	string userLogin, result;
 	int charSize=100;
 	char * localhost = new char [charSize];
-	int validHost = gethostname(localhost, charSize);
+	int validHost = gethostname(localhost, charSize);//obtaining local machine's name
 	struct passwd *pwd = getpwuid(getuid());
 	
 	if (validHost!= -1 && pwd!=NULL) {
-		userLogin = pwd->pw_name;
+		userLogin = pwd->pw_name;		//obtaining user's login name
 		result = userLogin + "@" + localhost + "$ ";
 	}
-	else {
+	else { // in case access or permission is denied
 		cerr<< "Failed to obtain user's username and local machine's name\n";
 		result = "$ ";
 	}
@@ -45,40 +51,18 @@ int main(){
 		//gets next command
 		getline(cin, input);
 		
-		
 		Tokenizer * tokenizer = new Tokenizer(input);
-//		//sets value inside toknizer class
-//		tokenizer->setVal(input);
-//		//executes the tokenizing operation
-//		tokenizer->execute();
-//		vector<Token *> temp = tokenizer->getVector();
-		
 		
  		//sets value inside the execute class
  		execute->setTokenizer(tokenizer);
  		//executes the command operations inside execute
  		exitState = execute->execute();
+		
 		delete tokenizer;
 		input = '\0';
 	}
 	while (exitState);
 	
 	cout<< "The program exits!\n";
-	//delete execute;
-	
-	//execute->execute();
-//	vector<Token*> tokenizervect = temp->getVector();
-//	
-//    
-//	for (unsigned i = 0; i < tokenizervect.size(); i++)
-//	{
-//		cout << i << ">>";
-//		for (unsigned j = 0; j < tokenizervect.at(i)->getSubTokensVect().size(); j++)
-//		{
-//			cout << tokenizervect.at(i)->getSubTokensVect().at(j) << endl;
-//		}
-//	}
-
-//	system("pause");
 	return 0;
 }

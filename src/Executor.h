@@ -1,6 +1,5 @@
 #ifndef EXECUTOR_H
 #define EXECUTOR_H
-#include<stdlib.h>
 
 class Executor : public Base {
 private:
@@ -11,7 +10,7 @@ private:
 	//fork handlers
 	int pip[2]; // for closing cases on pipe
 	pid_t child, c; //fork's value will be stored inside of the child, and c is used for waiting
-	int cstatus, getPID; //cstatus is very crucial to determine the state of previousState (connector handlers)
+	int cstatus; //cstatus is very crucial to determine the state of previousState (connector handlers)
 	Tokenizer * tokenizer; //a temporary variable that points to the actual tokenizer given from class Tokenizer
 	
 	void executor (unsigned i) {
@@ -36,7 +35,7 @@ private:
 			kill(getpid(), SIGKILL);	//VERY IMPORTANT: kill the child that has failed to do execvp.. killing it without mercy is fine
 			close(pip[1]);
 		}
-		else if (child == (pid_t)(-1)) {		// POSSIBLE to happen.. may make your system crash (happened to me when debugging)
+		else if (child == (pid_t)(-1)) {		// POSSIBLE to happen.. 
 			cerr << "Failed to do fork\n";
 		}
 		else {									// if it's positive, this should be accessed by parent process(es)
@@ -60,13 +59,11 @@ private:
 		if (firstTime) {
 			pipe(pip);
 			child = fork();
-			//cout<<"isFirstTime, getpid: "<<getPID<<endl;
 			firstTime=false;	//will never access this IF anymore.. ever..
 			return child;
 		}
 		else {
 			child = fork();
-			//cout<< "Now child is: " << getpid() << ", parent is: "<<getPID<<endl; //for debugging
 			return child;
 		}
 	}
@@ -84,7 +81,7 @@ private:
 		else if (tokenizer->getVector().at(i)->getSubTokensVect().at(0) == "exit") {
 			return 3; // 3 is for exit
 		}
-		else if (tokenizer->getVector().at(i)->getSubTokensVect().at(0) == "" || tokenizer->getVector().at(i)->getSubTokensVect().at(0).c_str() == '\0') {
+		else if (tokenizer->getVector().at(i)->getSubTokensVect().at(0) == "" || tokenizer->getVector().at(i)->getSubTokensVect().at(0) == "\0") {
 			exit(0);
 			return 3; // We don't want to process a NULL..
 		}
@@ -112,7 +109,7 @@ public:
 		for (unsigned i = 0; i < tokenizer->getVector().size(); i++)
 		{
 			cases = operatorHandling(i);
-//			cout << "-----i="<<i<<" & "<<previousState << " < prevState-----"<< getpid()<<"\n"; //for debugging
+		//	cout << "-----i="<<i<<" & "<<previousState << " < prevState-----"<< getpid()<<"\n"; //for debugging
 			switch (cases) {
 				case 0: { // case ||
 					if (previousState) {

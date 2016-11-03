@@ -21,6 +21,7 @@ private:
 		string result;				//the value of a token to be created is stored here
 		char currentChar;			//the currentChar used in traversing through characters
 		char nextChar;				//the nextChar used in finding the next character
+		bool quoteHelper=true;		//to check whether the single double quotation mark scenario happen
 									//		regularToken = new Token();
 
 		while (this->commandStream.get(currentChar)) {
@@ -36,31 +37,28 @@ private:
 																												//appends the next character read to the string result
 					nextChar = commandStream.peek();										//gets the value of the next character to be accessed using get()
 					commandStream.get(currentChar);											//gets the next character in order to check if it is a quotation mark
-					if (currentChar == '"') {
-						result += "\n";	//to be able to add newline in output
-						this->tokenize(result);
-						result = "";
-					}
 
 					//if the next character is a null terminator for the string stream, but quotation has not been found, ask for more input
 					if (isNull(nextChar))
 					{
+						quoteHelper = false;
 						string temp = "";
 						do
 						{
-							temp += askForInputLine(); //prompts for more input
+							temp += "\n" + askForInputLine(); //prompts for more input
 
-						} while ((!containsQuoteAtLastIndex(temp)) && ((temp += "\n") == temp));
+						} while ((!containsQuoteAtLastIndex(temp)));
 						//keeps asking for more input while user doesn't enter a quotation mark as the last character
-						int eraseQuote = temp.length() - 1; //we know last character in the string contains quotation mark by previous conditions
-															// erase the actual quotation mark, so it's not included in the token
+						int eraseQuote = (int)temp.length() - 1; //we know last character in the string contains quotation mark by previous conditions
+						// erase the actual quotation mark, so it's not included in the token
 						temp.erase(eraseQuote);
 						result += temp;
 						this->tokenize(result);
 						currentChar = '"';
 					}
-
+					
 				} while (!isQuote(currentChar));
+				if (quoteHelper) this->tokenize(result);
 			}
 
 			//case: #
@@ -75,7 +73,7 @@ private:
 			//case: |
 			else if (isOr(currentChar) && isOr(nextChar)) {
 				if (((int)result.size() > 0) && ((int)result.find_first_not_of(' ') != -1)) {
-
+					
 					tokenize(result);															//creates a Token for result of everything before the '|' was found if there was something there
 				}
 
@@ -124,7 +122,7 @@ private:
 			else {
 				/*nextChar = commandStream.peek();*/
 				result += currentChar;
-				if (isNull(nextChar) && ((int)result.size() > 0) && ((int)result.find_first_not_of(' ') != -1)) {		//if this is the last character in the line, proceed to tokenize everything that came before that		
+				if (isNull(nextChar) && ((int)result.size() > 0) && ((int)result.find_first_not_of(' ') != -1)) {		//if this is the last character in the line, proceed to tokenize everything that came before that
 					tokenize(result);
 				}
 			}
@@ -211,7 +209,6 @@ private:
 		}
 		else
 		{
-
 			regularToken->appendValue(value);
 
 			char temp = commandStream.peek();
