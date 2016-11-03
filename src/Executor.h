@@ -32,7 +32,7 @@ private:
 			
 			//it should exit by the point above, otherwise it fails (below)
 			previousState=false;
-			cerr<< "Failed to do execvp!\n";
+			cerr<< "-bash: \""<< args[0]<<"\" command not found!\n";
 			kill(getpid(), SIGKILL);	//VERY IMPORTANT: kill the child that has failed to do execvp.. killing it without mercy is fine
 			close(pip[1]);
 		}
@@ -84,9 +84,9 @@ private:
 		else if (tokenizer->getVector().at(i)->getSubTokensVect().at(0) == "exit") {
 			return 3; // 3 is for exit
 		}
-		else if (tokenizer->getVector().at(i)->getSubTokensVect().at(0) == "") {
+		else if (tokenizer->getVector().at(i)->getSubTokensVect().at(0) == "" || tokenizer->getVector().at(i)->getSubTokensVect().at(0).c_str() == '\0') {
 			exit(0);
-			return 99; // Meant to be for EOF or Ctrl+D...
+			return 3; // We don't want to process a NULL..
 		}
 		else return 4; // 3 is for normal operation
 	}
@@ -108,6 +108,7 @@ public:
 	
 	bool execute() {
 		// cout<< "tokenizer's size is " << tokenizer->getVector().size()<<endl; // for debugging
+		if (tokenizer->getVector().size()==0) return false; // such as performing Ctrl+D
 		for (unsigned i = 0; i < tokenizer->getVector().size(); i++)
 		{
 			cases = operatorHandling(i);
