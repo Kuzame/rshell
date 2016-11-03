@@ -21,8 +21,8 @@ private:
 		string result;				//the value of a token to be created is stored here
 		char currentChar;			//the currentChar used in traversing through characters
 		char nextChar;				//the nextChar used in finding the next character
-		bool quoteHelper=true;		//to check whether the single double quotation mark scenario happen
-									//		regularToken = new Token();
+		bool quoteHelper = true;		//to check whether the single double quotation mark scenario happen
+										//		regularToken = new Token();
 
 		while (this->commandStream.get(currentChar)) {
 			//currentChar is the character being tested
@@ -38,7 +38,7 @@ private:
 					nextChar = commandStream.peek();										//gets the value of the next character to be accessed using get()
 					commandStream.get(currentChar);											//gets the next character in order to check if it is a quotation mark
 
-					//if the next character is a null terminator for the string stream, but quotation has not been found, ask for more input
+																							//if the next character is a null terminator for the string stream, but quotation has not been found, ask for more input
 					if (isNull(nextChar))
 					{
 						quoteHelper = false;
@@ -50,15 +50,20 @@ private:
 						} while ((!containsQuoteAtLastIndex(temp)));
 						//keeps asking for more input while user doesn't enter a quotation mark as the last character
 						int eraseQuote = (int)temp.length() - 1; //we know last character in the string contains quotation mark by previous conditions
-						// erase the actual quotation mark, so it's not included in the token
+																 // erase the actual quotation mark, so it's not included in the token
 						temp.erase(eraseQuote);
 						result += temp;
+
 						this->tokenize(result);
 						currentChar = '"';
 					}
-					
+
 				} while (!isQuote(currentChar));
-				if (quoteHelper) this->tokenize(result);
+				if (quoteHelper) {
+					/*lastToken = true;*/
+					this->tokenize(result);
+					result = "";
+				}
 			}
 
 			//case: #
@@ -67,13 +72,14 @@ private:
 
 					tokenize(result);														//creates a Token for result of everything before the '|' was found if there was something there
 				}
-				commandStream.str("");													//makes an empty string be set in stream in order to terminate after
+				commandStream.str(" ");													//makes an empty string be set in stream in order to terminate after
+				lastToken = true;
 			}
 
 			//case: |
 			else if (isOr(currentChar) && isOr(nextChar)) {
 				if (((int)result.size() > 0) && ((int)result.find_first_not_of(' ') != -1)) {
-					
+
 					tokenize(result);															//creates a Token for result of everything before the '|' was found if there was something there
 				}
 
@@ -113,7 +119,7 @@ private:
 			else if (isSpace(currentChar)) {
 				//do nothing
 				//do not want to tokenize an empty character so we simply tokenize what ever came before it
-				if (((int)result.size() > 0) && ((int)result.find_first_not_of(' ') != -1)) {
+				if ((((int)result.size() > 0) && ((int)result.find_first_not_of(' ') != -1)) || lastToken) {
 					tokenize(result);															//creates a Token for result of everything before the '&' was found if there was something there
 					result = "";
 				}
@@ -160,7 +166,7 @@ private:
 	//returns input entered
 	string askForInputLine() {
 		string line;
-		cout << ">> ";
+		cout << "\n>> ";
 
 		getline(cin, line);
 		return line;
@@ -209,7 +215,11 @@ private:
 		}
 		else
 		{
-			regularToken->appendValue(value);
+			if (value != "")
+			{
+				regularToken->appendValue(value);
+			}
+
 
 			char temp = commandStream.peek();
 			if (isNull(temp)) {
@@ -239,6 +249,7 @@ public:
 	Tokenizer(string value) {
 		_setVal(value);
 		regularToken = new Token;
+		lastToken = false;
 		execute();
 	}
 	~Tokenizer() {
