@@ -82,9 +82,9 @@ private:
 			return 3; // 3 is for exit
 		}
 		else if (tokenizer->getVector().at(i)->getSubTokensVect().at(0) == "" || tokenizer->getVector().at(i)->getSubTokensVect().at(0) == "\0") {
-			return 3; // We don't want to process a NULL..
+			return 99; // if user enter nothing, do nothing
 		}
-		else return 4; // 3 is for normal operation
+		else return 4; // 4 is for normal operation
 	}
 	
 public:
@@ -104,7 +104,8 @@ public:
 	
 	bool execute() {
 		// cout<< "tokenizer's size is " << tokenizer->getVector().size()<<endl; // for debugging
-		if (tokenizer->getVector().size()==0) return false; // such as performing Ctrl+D
+//		if (tokenizer->getVector().size()==0) return false; // such as performing Ctrl+D
+//		cout<<"not even here yet";
 		for (unsigned i = 0; i < tokenizer->getVector().size(); i++)
 		{
 			cases = operatorHandling(i);
@@ -138,7 +139,7 @@ public:
 						executor(i);//present the tokens to execvp
 					}
 				}; break;
-				default: cout<< "Something is wrong#@!\n"; break; //we shouldn't ever get here unless someone hacks the memory..
+				default: break; //do nothing
 			}
 		}
 		
