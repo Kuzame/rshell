@@ -82,7 +82,6 @@ private:
 			return 3; // 3 is for exit
 		}
 		else if (tokenizer->getVector().at(i)->getSubTokensVect().at(0) == "" || tokenizer->getVector().at(i)->getSubTokensVect().at(0) == "\0") {
-			exit(0);
 			return 3; // We don't want to process a NULL..
 		}
 		else return 4; // 3 is for normal operation
