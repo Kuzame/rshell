@@ -160,7 +160,7 @@ private:
 	//returns input entered
 	string askForInputLine() {
 		string line;
-		cout << "\n>> ";
+		cout << ">> ";
 
 		getline(cin, line);
 		return line;
