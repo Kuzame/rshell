@@ -1,5 +1,5 @@
-#ifndef _TOKEN_H_
-#define _TOKEN_H_
+#ifndef _TOKEN_H
+#define _TOKEN_H
 
 using namespace std;
 
@@ -7,7 +7,7 @@ class Token : public Base
 {
 private:
 	vector<string> subTokens;
-	
+
 	void _appendValue(string value) {
 		this->subTokens.push_back(value);
 	}
@@ -16,14 +16,15 @@ private:
 
 public:
 	//constructors and destructors
-	Token(){}
+	Token() {}
 
 	//sets values and calls execute in order to generate and format members
-	Token(string value){
+	Token(string value) {
 		this->appendValue(value);
 	}
-	~Token(){ 
-    }
+	~Token() {
+		subTokens.clear();
+	}
 
 	int getSize() {
 		return ((int)this->subTokens.size());
@@ -42,8 +43,28 @@ public:
 		return temp;
 	}
 
-	bool execute(){
+	bool execute() {
 		return true;
+	}
+
+	bool isAnd() {
+		return subTokens.at(0) == "&&";
+	}
+
+	bool isOr() {
+		return subTokens.at(0) == "||";
+	}
+
+	bool isSemicolon() {
+		return subTokens.at(0) == ";";
+	}
+
+	bool isExit() {
+		return subTokens.at(0) == "exit";
+	}
+
+	bool isTest() {
+		return subTokens.at(0) == "test";
 	}
 };
 
