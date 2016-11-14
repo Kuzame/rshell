@@ -27,7 +27,7 @@ $ bin/rshell
     ()
 
 ### Known Bugs
-- Commands with quotation marks will not preserve original order of input (echo "Hello    World" will display as "Hello World")
+- Commands with quotation marks will not preserve original order of input (echo "Hello _ _ _ World" will display as "Hello _ World" where _ represents a space)
 - Arrow keys do not navigate through the text currently being typed (must use backspace to go back)
 - Functionality to change directories is not implemented (will result in unknown command error)
 
