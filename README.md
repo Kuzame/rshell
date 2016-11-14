@@ -24,9 +24,10 @@ $ bin/rshell
     ||
     &&
     #
+    ()
 
 ### Known Bugs
-- Users cannot enter commands with quotation marks within quotation marks or the program will not give the expected output
+- Commands with quotation marks will not preserve original order of input (echo "Hello    World" will display as "Hello World")
 - Arrow keys do not navigate through the text currently being typed (must use backspace to go back)
 - Functionality to change directories is not implemented (will result in unknown command error)
 
