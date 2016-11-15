@@ -1,6 +1,8 @@
 #ifndef EXECUTOR_H
 #define EXECUTOR_H
 
+#include <sys/stat.h>
+
 class Executor : public Base {
 private:
 	//operator (connector) handlers
@@ -11,7 +13,8 @@ private:
 	int pip[2]; // for closing cases on pipe
 	pid_t child, c; //fork's value will be stored inside of the child, and c is used for waiting
 	int cstatus; //cstatus is very crucial to determine the state of previousState (connector handlers)
-	Tokenizer * tokenizer; //a temporary variable that points to the actual tokenizer given from class Tokenizer
+//	Tokenizer * tokenizer; //a temporary variable that points to the actual tokenizer given from class Tokenizer
+	vector <string> temp;
 	
 	void executor (unsigned i) {
 		int size = (int) tokenizer->getVector().at(i)->getSubTokensVect().size();
@@ -55,6 +58,65 @@ private:
 		delete * args; //prevent memory leak
 	}
 	
+	bool testExecutor(unsigned i) {
+		struct stat test;
+		int size = (int) tokenizer->getVector().at(i)->getSubTokensVect().size();
+		string flag, path;
+		
+		if (size == 1) {
+			cout<< "(TRUE without argument)"<<endl;
+		}
+		else if (size ==2) {
+			flag = "-e"; //automatically assume the default -e, so we can still test
+			path = tokenizer->getVector().at(i)->getSubTokensVect().at(1);
+		}
+		else {
+			flag = tokenizer->getVector().at(i)->getSubTokensVect().at(1);
+			path = tokenizer->getVector().at(i)->getSubTokensVect().at(2);
+		}
+		
+		int status = stat(path.c_str(), &test);
+		
+		if (status ==-1) {
+			cout<< "Path/File doesn't exist (FALSE)"<<endl;
+			return false;
+		}
+		else if (flag =="-e") {
+			cout<<"Path/File exist (TRUE)"<<endl;
+			return true;
+		}
+		else if (flag == "-d") {
+			if (S_ISDIR(test.st_mode)) {
+				cout<<"It is a directory (TRUE)"<<endl;
+				return true;
+			}
+			else {
+				cout<<"It is NOT a directory (FALSE)"<<endl;
+				return false;
+			}
+		}
+		else if (flag == "-f") {
+			if (S_ISREG(test.st_mode)) {
+				cout<<"It is a file (TRUE)"<<endl;
+				return true;
+			}
+			else {
+				cout<<"It is NOT a file (FALSE)"<<endl;
+				return false;
+			}
+		}
+		else {
+			cout<<"Flag "<<flag<<" is not recognized (FALSE)"<<endl;
+			return false;
+		}
+//		cout<< "Flag is: " << flag <<endl;
+//		
+//		cout<< "Path is: " <<path<<endl;
+//		cout<< "Status: "<<status<<endl;
+		
+//		return true;
+	}
+	
 	int isFirstTime() { // this is just to set up a pipe
 		if (firstTime) {
 			pipe(pip);
@@ -81,6 +143,9 @@ private:
 		else if (tokenizer->getVector().at(i)->getSubTokensVect().at(0) == "exit") {
 			return 3; // 3 is for exit
 		}
+		else if (tokenizer->getVector().at(i)->getSubTokensVect().at(0) == "test") {
+			return 7; // 7 is for test
+		}
 		else if (tokenizer->getVector().at(i)->getSubTokensVect().at(0) == "" || tokenizer->getVector().at(i)->getSubTokensVect().at(0) == "\0") {
 			return 99; // if user enter nothing, do nothing
 		}
@@ -98,6 +163,12 @@ public:
 	
 	void setTokenizer (Tokenizer * tokenizer) {
 		this->tokenizer = tokenizer;
+		this->previousState=true;
+		this->firstTime=true;
+	}
+	
+	void setVector (vector <string> temp) {
+		this->temp = temp;
 		this->previousState=true;
 		this->firstTime=true;
 	}
@@ -139,6 +210,9 @@ public:
 						executor(i);//present the tokens to execvp
 					}
 				}; break;
+				case 7: {
+					testExecutor(i);
+				};break;
 				default: break; //do nothing
 			}
 		}
