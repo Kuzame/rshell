@@ -111,16 +111,23 @@ void BinaryTokenCmdTree::execute() {
 void BinaryTokenCmdTree::parseAndGenerateCmdTree(string line)
 {
 	bool isParenth = false;
-
+	bool throwError = false;
+	bool lastToken = false;
+	
 	string result;				//the value of a token to be created is stored here
 	string currentChar;			//the currentChar used in traversing through characters
 	string nextChar;				//the nextChar used in finding the next character
 
-	bool lastToken = false;
+	
+	Token* helperToken = new Token();
 
 	for (unsigned i = 0; i < line.length() && !lastToken; i++)
 	{
+		//currentChar and nextChar setters
+
 		currentChar = line.at(i);
+		//gets next char only if nextChar if nextChar (i + 1) is within range of string
+		//else, it sets nextChar to -1, which is considered as NULl in bool isNull(char)
 		if ((i + 1) < line.length())
 		{
 			nextChar = line.at(i + 1);
@@ -131,23 +138,63 @@ void BinaryTokenCmdTree::parseAndGenerateCmdTree(string line)
 			nextChar = -1;
 		}
 
+		//.find_first_not_of() returns -1 if not found
+		//so if we did not find anything that is not a space
+//		string substring = line.substr(i, line.size());
+//		if (substring.find_first_not_of(' ') != -1)
+//		{
+//			lastToken = true;		//is lastToken if everything left in the string is a space
+//		}
+
+		///------------------------------------------------------------
+		//condition 1) if we reach a connector, or reach end of string, 
+		//tokenize what came before it (should be a command)
+		
+		//Condition 2) also, if we reach a space and if result is greater 
+		//than zero, tokenize what came before it [tokenize will not insert this]
+		///------------------------------------------------------------
+
+		///------------------------------------------------------------
+		//condition 1) if we reach a connector, or reach end of string,
+		//insert the token created in the tree
+
+		//condition 2) also, if we reach a space and if result is greater than zero,
+		//append the current value to the existing token
+
+		//condition 3) result should NEVER contain a space
+
+		///------------------------------------------------------------
+
+
+
 		//case: #
 		if (isPound(currentChar.at(0))) {
-			if (((int)result.size() > 0) && ((int)result.find_first_not_of(' ') != -1)) {			//if not empty and found a character which is not a space
-			//if (((int)result.size() > 0)) {
-				if (!isParenth)
+			//if there is still something in result, then append the value to the helperToken and insert
+			//handles appending
+			if (result.size() > 0)
+			{
+				helperToken->appendValue(result);
+				result = "";
+			}
+
+			//handles insertion
+			if (helperToken->getSubTokensVect().size() > 0)
+			{
+				if (isParenth)
 				{
-					tokenize(lastToken, result);														//creates a Token for result of everything before the '|' was found if there was something there
-					result = "";
+
+					this->helperRootPtr = this->_insert(helperRootPtr, new BinaryNode(helperToken));
+
 				}
 				else
 				{
-					tokenizeWithinParenthesis(lastToken, result);
-					result = "";
+					this->insert(helperToken);
+
 				}
-			
+				//helperToken = new Token();				//we know this is the last Token
 			}
-			lastToken = true;															//when it reaches the conditions check in for loop it will terminate the parseAndGenerateCmdTree stage
+
+			lastToken = true;					//case where lastToken is absolutely necessary
 		}
 
 		//case: (
@@ -159,158 +206,318 @@ void BinaryTokenCmdTree::parseAndGenerateCmdTree(string line)
 		//case: )
 		else if (isRightParenthesis(currentChar.at(0)))
 		{
+			//if there is still something in result, then append the value to the helperToken and insert
+			//handles appending
+			if (result.size() > 0)
+			{
+				helperToken->appendValue(result);
+				result = "";
+			}
+
+			//handles insertion if there is still something left to insert
+			if (helperToken->getSubTokensVect().size() > 0)
+			{
+				if (isParenth)
+				{
+					this->helperRootPtr = this->_insert(helperRootPtr, new BinaryNode(helperToken));
+				}
+				else
+				{
+					this->insert(helperToken);
+
+				}
+				helperToken = new Token();
+			}
+
 			isParenth = false;
-			//when the closing parenthesis is found, it inserts the newly created tree into whichever location is available in the actual rootPtr
-			//result = -1;
-			tokenizeWithinParenthesis(lastToken, result);		//tokenizes the last value before the right parenthesis
-			rootPtr = this->_insert(rootPtr, helperRootPtr);
+
+			if (helperRootPtr->getItem()->getSubTokensVect().size() > 0)
+			{
+				rootPtr = this->_insert(rootPtr, helperRootPtr);				//inserts whatever got created in helperRootPtr if there is something in it	
+			}
+		}
+		
+		//case: [
+		else if(isLeftBracket(currentChar.at(0)))
+		{
+			if (nextChar == " ")
+			{
+				helperToken->appendValue("test");
+			}
+			else
+			{
+				helperToken->appendValue("test");
+				
+			}
+		}
+
+		//case: ]
+		else if(isRightBracket(currentChar.at(0)))
+		{
+			//if there is still something in result, then append the value to the helperToken and insert
+			//handles appending
+			if (result.size() > 0)
+			{
+				helperToken->appendValue(result);
+				result = "";
+			}
+
+			//handles insertion
+			if (helperToken->getSubTokensVect().size() > 0)
+			{
+				if (isParenth)
+				{
+					this->helperRootPtr = this->_insert(helperRootPtr, new BinaryNode(helperToken));
+				}
+				else
+				{
+					this->insert(helperToken);
+
+				}
+				helperToken = new Token();
+			}
+		
 		}
 
 		//case: ||
 		else if (isOr(currentChar.at(0)) && isOr(nextChar.at(0))) {
-			if (((int)result.size() > 0) && ((int)result.find_first_not_of(' ') != -1)) {	//checks if result contains a character that is not a whitespace character
-				if (!isParenth)
+			//if there is still something in result, then append the value to the helperToken and insert
+			//handles appending
+			if (result.size() > 0)
+			{
+				helperToken->appendValue(result);
+				result = "";
+			}
+
+			//handles insertion
+			if (helperToken->getSubTokensVect().size() > 0)
+			{
+				if (isParenth)
 				{
-					tokenize(lastToken, result);														//creates a Token for result of everything before the '|' was found if there was something there
-					result = "";
+
+					this->helperRootPtr = this->_insert(helperRootPtr, new BinaryNode(helperToken));
+
 				}
 				else
 				{
-					tokenizeWithinParenthesis(lastToken, result);
-					result = "";
-				}
+					this->insert(helperToken);
 
+				}
+				helperToken = new Token();
 			}
 
-			//either way, you always want to tokenize the "||"
-			result = currentChar;
-			result += nextChar;																//the result is now the two pipes
-			//creates a Token for the result
-			if (!isParenth)
+			//inserts OR connector
+			if (isParenth)
 			{
-				tokenize(lastToken, result);														//creates a Token for result of everything before the '|' was found if there was something there
-				result = "";
+
+				this->helperRootPtr = this->_insert(helperRootPtr, new BinaryNode(new Token("||")));
+
 			}
 			else
 			{
-				tokenizeWithinParenthesis(lastToken, result);
-				result = "";
+				this->insert(new Token("||"));
+
 			}
-
-			++i;																			//increments the iteration so it is now at the index of the second '|' since we know what it is
-
-
-			result = "";
+			++i;		//increments index to avoid a second |
 		}
 
 		//case: &&
 		else if (isAnd(currentChar.at(0)) && isAnd(nextChar.at(0))) {
-			if (((int)result.size() > 0) && ((int)result.find_first_not_of(' ') != -1)) {	//checks if result contains a character that is not a whitespace character
-				if (!isParenth)
+			//if there is still something in result, then append the value to the helperToken and insert
+			//handles appending
+			if (result.size() > 0)
+			{
+				helperToken->appendValue(result);
+				result = "";
+			}
+
+			//handles insertion
+			if (helperToken->getSubTokensVect().size() > 0)
+			{
+				if (isParenth)
 				{
-					tokenize(lastToken, result);														//creates a Token for result of everything before the '|' was found if there was something there
-					result = "";
+
+					this->helperRootPtr = this->_insert(helperRootPtr, new BinaryNode(helperToken));
+
 				}
 				else
 				{
-					tokenizeWithinParenthesis(lastToken, result);
-					result = '\0';
-				}
+					this->insert(helperToken);
 
+				}
+				helperToken = new Token();
 			}
 
-			//either way, you always want to tokenize the "&&"
-			result = currentChar;
-			result += nextChar;																//the result is now the two pipes
-			//creates a Token for the result
-			if (!isParenth)
+
+			//inserts AND connector
+			if (isParenth)
 			{
-				tokenize(lastToken, result);														//creates a Token for result of everything before the '|' was found if there was something there
-				result = "";
+
+				this->helperRootPtr = this->_insert(helperRootPtr, new BinaryNode(new Token("&&")));
+
 			}
 			else
 			{
-				tokenizeWithinParenthesis(lastToken, result);
-				result = "";
+				this->insert(new Token("&&"));
+
 			}
-			++i;																			//increments the iteration so it is now at the index of the second '&' since we know what it is
 
-
-			result = "";
+			++i;		//increments index to avoid a second &
 		}
 
 		//case: ;
 		else if (isSemicolon(currentChar.at(0))) {
-			if (((int)result.size() > 0) && ((int)result.find_first_not_of(' ') != -1)) {
-				if (!isParenth)
+			//if there is still something in result, then append the value to the helperToken and insert
+			//handles appending
+			if (result.size() > 0)
+			{
+				helperToken->appendValue(result);
+				result = "";
+			}
+
+			//handles insertion
+			if (helperToken->getSubTokensVect().size() > 0)
+			{
+				if (isParenth)
 				{
-					tokenize(lastToken, result);														//creates a Token for result of everything before the '|' was found if there was something there
-					result = "";
+
+					this->helperRootPtr = this->_insert(helperRootPtr, new BinaryNode(helperToken));
+
 				}
 				else
 				{
-					tokenizeWithinParenthesis(lastToken, result);
-					result = "";
-				}
+					this->insert(helperToken);
 
+				}
+				helperToken = new Token();
 			}
-			result = currentChar;
-			if (!isParenth)
+
+			//inserts SEMICOLON connector
+			if (isParenth)
 			{
-				tokenize(lastToken, result);														//creates a Token for result of everything before the '|' was found if there was something there
-				result = "";
+
+				this->helperRootPtr = this->_insert(helperRootPtr, new BinaryNode(new Token(";")));
+
 			}
 			else
 			{
-				tokenizeWithinParenthesis(lastToken, result);
-				result = "";
+				this->insert(new Token(";"));
+
 			}
 
 		}
 
 		//case: space
 		else if (isSpace(currentChar.at(0))) {
-			//do nothing
-			//do not want to tokenize an empty character so we simply tokenize what ever came before it
-			if ((((int)result.size() > 0) && ((int)result.find_first_not_of(' ') != -1)) || lastToken) {		//ADDED FUNCTIONALITY HERE VS IN FOR LOOP MIGHT HANDLE THE SAME POSSIBLE SITUATION TWICE
-				if (!isParenth)
-				{
-					tokenize(lastToken, result);														//creates a Token for result of everything before the '|' was found if there was something there
-					result = "";
-				}
-				else
-				{
-					tokenizeWithinParenthesis(lastToken, result);
-					result = "";
-				}
+			if (result.size() > 0)
+			{
+				helperToken->appendValue(result);
+				result = "";
+			}
 
+			if (lastToken)
+			{
+				//handles insertion
+				if (helperToken->getSubTokensVect().size() > 0)
+				{
+					if (isParenth)
+					{
+
+						this->helperRootPtr = this->_insert(helperRootPtr, new BinaryNode(helperToken));
+
+					}
+					else
+					{
+						this->insert(helperToken);
+
+					}
+					//helperToken = new Token();				//we know we do not need this since it is the lastToken
+				}
 			}
 		}
+		
 
-		//case: everything else
+		//case: commands (i.e. everything else)
 		else {
-			/*nextChar = commandStream.peek();*/
 			result += currentChar;
-			if (isNull(nextChar.at(0)) && ((int)result.size() > 0) && ((int)result.find_first_not_of(' ') != -1)) {		//if this is the last character in the line, proceed to tokenize everything that came before that
-				if (!isParenth)
+			//the only time a command will tokenize and insert itself is if this is the lastToken
+			//in every other situation a connector can tokenize it
+			if (lastToken)
+			{			
+				//if there is still something in result, then append the value to the helperToken and insert
+				//handles appending
+				if (result.size() > 0)
 				{
-					tokenize(lastToken, result);														//creates a Token for result of everything before the '|' was found if there was something there
-					result = "";
-				}
-				else
-				{
-					tokenizeWithinParenthesis(lastToken, result);
+					helperToken->appendValue(result);
 					result = "";
 				}
 
+				//handles insertion
+				if (helperToken->getSubTokensVect().size() > 0)
+				{
+					if (isParenth)
+					{
+
+						this->helperRootPtr = this->_insert(helperRootPtr, new BinaryNode(helperToken));
+
+					}
+					else
+					{
+						this->insert(helperToken);
+
+					}
+					//helperToken = new Token();				//we know we do not need this since it is the lastToken
+				}
 			}
 		}
+
+
+	//	if (throwError)
+	//	{
+	//		i = line.length();			//to exit loop	
+	//	}
+
+/*
+		if (goodToInsert)
+		{
+			goodToInsert = false;
+			if (isParenth)
+			{
+
+				this->helperRootPtr = this->_insert(helperRootPtr, new BinaryNode(helperToken));
+				
+			}
+			else
+			{
+				this->insert(helperToken);
+				
+			}
+
+			//create new Token only if this is not the last Token
+			if (!lastToken)
+			{
+				helperToken = new Token();
+			}
+		}
+*/
+
+
+
+	}
+
+	//if for some reason a helperToken was created without any subTokens (i.e. created in error)
+	//then delete it
+	if (helperToken->getSubTokensVect().size() == 0)
+	{
+
+		delete helperToken;
+
 	}
 }
 
-
+/*
 void BinaryTokenCmdTree::tokenize(bool isLastToken, string line) {
-	if (isOr(line.at(0)))
+	if (line.size() > 0 && isOr(line.at(0)))
 	{
 		//push regularToken to the vector for all previous non special tokens
 		this->insert(regularToken);
@@ -319,7 +526,7 @@ void BinaryTokenCmdTree::tokenize(bool isLastToken, string line) {
 		this->insert(new Token(line));
 
 	}
-	else if (isAnd(line.at(0)))
+	else if (line.size() > 0 && isAnd(line.at(0)))
 	{
 		//push regularToken to the vector for all previous non special tokens
 		this->insert(regularToken);
@@ -329,7 +536,7 @@ void BinaryTokenCmdTree::tokenize(bool isLastToken, string line) {
 
 		this->insert(new Token(line));
 	}
-	else if (isSemicolon(line.at(0)))
+	else if (line.size() > 0 && isSemicolon(line.at(0)))
 	{
 		//push regularToken to the vector for all previous non special tokens
 		this->insert(regularToken);
@@ -341,16 +548,19 @@ void BinaryTokenCmdTree::tokenize(bool isLastToken, string line) {
 	}
 	else
 	{
-		if (!isNull(line.at(0)))
+
+		if (line.size() > 0 && !isNull(line.at(0)))
 		{
 			regularToken->appendValue(line);
 		}
-		else {
+
+		if (line.size() > 0 && isNull(line.at(0)) && !isLastToken)
+		{
 			this->insert(regularToken);
 			regularToken = new Token;
 		}
 		
-		if (isLastToken) {
+		if (line.size() > 0 && isLastToken) {
  			this->insert(regularToken); 
  		}
 	}
@@ -359,7 +569,7 @@ void BinaryTokenCmdTree::tokenize(bool isLastToken, string line) {
 
 void BinaryTokenCmdTree::tokenizeWithinParenthesis(bool isLastToken, string line){
 
-	if (isOr(line.at(0)))
+	if (line.size() > 0 && isOr(line.at(0)))
 	{
 		//push regularToken to the vector for all previous non special tokens
 		helperRootPtr = this->_insert(helperRootPtr, new BinaryNode(regularToken));
@@ -368,7 +578,7 @@ void BinaryTokenCmdTree::tokenizeWithinParenthesis(bool isLastToken, string line
 		helperRootPtr = this->_insert(helperRootPtr, new BinaryNode(new Token(line)));
 
 	}
-	else if (isAnd(line.at(0)))
+	else if (line.size() > 0 && isAnd(line.at(0)))
 	{
 		//push regularToken to the vector for all previous non special tokens
 		helperRootPtr = this->_insert(helperRootPtr, new BinaryNode(regularToken));
@@ -378,7 +588,7 @@ void BinaryTokenCmdTree::tokenizeWithinParenthesis(bool isLastToken, string line
 
 		helperRootPtr = this->_insert(helperRootPtr, new BinaryNode(new Token(line)));
 	}
-	else if (isSemicolon(line.at(0)))
+	else if (line.size() > 0 && isSemicolon(line.at(0)))
 	{
 		//push regularToken to the vector for all previous non special tokens
 		helperRootPtr = this->_insert(helperRootPtr, new BinaryNode(regularToken));
@@ -390,24 +600,24 @@ void BinaryTokenCmdTree::tokenizeWithinParenthesis(bool isLastToken, string line
 	}
 	else
 	{
-		if (!isNull(line.at(0)))
+		if (line.size() > 0 && !isNull(line.at(0)))
 		{
 			regularToken->appendValue(line);
 		}
 
 		//in case caller is right parenthesis, we need to make sure _insert isn't duplicated
-		if(isNull(line.at(0) && !isLastToken)) {
+		if (line.size() > 0 && isNull(line.at(0) && !isLastToken)) {
 			helperRootPtr = this->_insert(helperRootPtr, new BinaryNode(regularToken));
 			regularToken = new Token;
 		}
 
-		if (isLastToken) {
+		if (line.size() > 0 && isLastToken) {
 			helperRootPtr = this->_insert(helperRootPtr, new BinaryNode(regularToken));
 		}
 	}
 
 }
-
+*/
 
 bool BinaryTokenCmdTree::isSpace(char val) {
 	return val == ' ';
