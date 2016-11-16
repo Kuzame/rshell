@@ -14,24 +14,25 @@ private:
 
 public:
 	// constructors
-	BinaryNode() { item = 0; leftPtr = 0; rightPtr = 0; }
-	BinaryNode(Token* anItem) { item = anItem; leftPtr = 0; rightPtr = 0; }
+	BinaryNode() { item = 0; leftPtr = 0; rightPtr = 0; continueExecution = true; /*executionFunction = new Executor()*/}
+	BinaryNode(Token* anItem) { item = anItem; leftPtr = 0; rightPtr = 0; continueExecution = true; /*executionFunction = new Executor()*/}
 	BinaryNode(Token* anItem,
 		BinaryNode* left,
 		BinaryNode* right) {
-		item = anItem; leftPtr = left; rightPtr = right;
+		item = anItem; leftPtr = left; rightPtr = right; continueExecution = true; /*executionFunction = new Executor()*/
 	}
 	~BinaryNode()
 	{
 		//delete /*executionFunction,*/ leftPtr;
 		//delete rightPtr;
+		//delete executionFunction;
 		delete item;
 		leftPtr = 0;
 		rightPtr = 0;
 		item = 0;
 	}
 	// accessors
-	void setItem(Token* anItem) { item = anItem; /*executionFunction = new Executor()*/; continueExecution = true; }	//ensure executionfunction is created and continueexecution is set to true
+	void setItem(Token* anItem) { item = anItem; }	//ensure executionfunction is created and continueexecution is set to true
 	void setLeftPtr(BinaryNode* left) { leftPtr = left; }
 	void setRightPtr(BinaryNode* right) { rightPtr = right; }
 	// mutators
@@ -90,9 +91,6 @@ public:
 			rightPtr->execute();
 			return true;					//semicolon will always return true so it does not affect ORs or ANDs
 		}
-// 		else if (isTest()){
-// 		
-// 		}
 		else if (isExit()) {
 			continueExecution = false;
 		}
