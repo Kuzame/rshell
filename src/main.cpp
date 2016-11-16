@@ -16,8 +16,9 @@
 #include <signal.h>
 #include "Base.h"
 #include "Token.h"
-#include "Tokenizer.h"
+//#include "Tokenizer.h"
 #include "Executor.h"
+#include "BinaryTokenCmdTree.h"
 
 using namespace std;
 
@@ -43,25 +44,15 @@ int main(){
 	
 	//Basics needed to perform rshell
 	string input;
-	bool exitState=true;
-	Executor * execute = new Executor();
-    //Tokenizer * tokenizer = new Tokenizer;	
-	do {
-		cout << result; //printing the extra credit here
-		//gets next command
-		getline(cin, input);
-		
-		Tokenizer * tokenizer = new Tokenizer(input);
-		
- 		//sets value inside the execute class
- 		execute->setTokenizer(tokenizer);
- 		//executes the command operations inside execute
- 		exitState = execute->execute();
-		
-		delete tokenizer;
-		input = '\0';
-	}
-	while (exitState);
+	//bool exitState=true;
+//	Executor * execute = new Executor();
+	BinaryTokenCmdTree *tree1 = new BinaryTokenCmdTree();	//tree objects
+	string input2 = "echo Hello World && (test -e rshell && [-e ~/Documents])      ";
+	
+	
+	tree1->parseAndGenerateCmdTree(input2);
+	tree1->execute();
+
 	
 	cout<< "The program exits!\n";
 	return 0;
