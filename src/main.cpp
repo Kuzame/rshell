@@ -43,11 +43,11 @@ int main(){
 	
 	
 	//Basics needed to perform rshell
-	string input;
+//	string input;
 	//bool exitState=true;
 //	Executor * execute = new Executor();
 	BinaryTokenCmdTree *tree1 = new BinaryTokenCmdTree();	//tree objects
-	string input2 = "echo Hello World && (test -e rshell && [-e ~/Documents])      ";
+	string input2 = "echo Hello World && (test -e main.cpp || [-e rshell])      ";
 	
 	
 	tree1->parseAndGenerateCmdTree(input2);

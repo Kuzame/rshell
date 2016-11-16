@@ -180,7 +180,9 @@ public:
 //		cout<<"not even here yet";
 //		for (unsigned i = 0; i < temp.size(); i++)
 //		{
-			cases = operatorHandling(0);
+
+        bool executionValidity;
+        cases = operatorHandling(0);
 		//	cout << "-----i="<<i<<" & "<<previousState << " < prevState-----"<< getpid()<<"\n"; //for debugging
 			switch (cases) {
 				case 0: { // case ||
@@ -209,17 +211,18 @@ public:
 				case 4: { // case normal operations
 					if (previousState) {
 						executor(0);//present the tokens to execvp
+                        executionValidity = previousState;
 					}
 				}; break;
 				case 7: {
-					testExecutor(0);
+					executionValidity = testExecutor(0);
 				};break;
 				default: break; //do nothing
 			}
 //		}
 		
 		//cout<< "###########  EXIT THE EXECUTE  #############\n";	//for debugging
-		return true;
+		return executionValidity;
 	}
 };
 
