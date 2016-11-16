@@ -15,7 +15,7 @@ private:
 	BinaryNode* removeLeftmostNode(BinaryNode* nodePtr, Token & successor);
 
 public:
-	BinaryTokenCmdTree() { rootPtr = 0; count = 0; helperRootPtr = 0; regularToken = new Token; }
+	BinaryTokenCmdTree() { rootPtr = 0; count = 0; helperRootPtr = 0; }
 	BinaryTokenCmdTree(const BinaryTokenCmdTree & tree) { this->rootPtr = copyTree(tree.rootPtr); this->helperRootPtr = tree.helperRootPtr; }
 	~BinaryTokenCmdTree()
 	{
@@ -31,20 +31,18 @@ public:
 	//added for rshell 2.0
 	void execute();
 	void parseAndGenerateCmdTree(string line);
-	void tokenize(bool isLastToken, string line);
-	void tokenizeWithinParenthesis(bool isLastToken, string line);
 
-	bool BinaryTokenCmdTree::isSpace(char val);
-	bool BinaryTokenCmdTree::isQuote(char val);
-	bool BinaryTokenCmdTree::isOr(char val);
-	bool BinaryTokenCmdTree::isAnd(char val);
-	bool BinaryTokenCmdTree::isSemicolon(char val);
-	bool BinaryTokenCmdTree::isNull(char val);
-	bool BinaryTokenCmdTree::isPound(char val);
-	bool BinaryTokenCmdTree::isLeftParenthesis(char val);
-	bool BinaryTokenCmdTree::isRightParenthesis(char val);
-	bool BinaryTokenCmdTree::isLeftBracket(char val);
-	bool BinaryTokenCmdTree::isRightBracket(char val);
+	bool isSpace(char val);
+	bool isQuote(char val);
+	bool isOr(char val);
+	bool isAnd(char val);
+	bool isSemicolon(char val);
+	bool isNull(char val);
+	bool isPound(char val);
+	bool isLeftParenthesis(char val);
+	bool isRightParenthesis(char val);
+	bool isLeftBracket(char val);
+	bool isRightBracket(char val);
 
 
 };
@@ -138,21 +136,6 @@ void BinaryTokenCmdTree::parseAndGenerateCmdTree(string line)
 			nextChar = -1;
 		}
 
-		//.find_first_not_of() returns -1 if not found
-		//so if we did not find anything that is not a space
-//		string substring = line.substr(i, line.size());
-//		if (substring.find_first_not_of(' ') != -1)
-//		{
-//			lastToken = true;		//is lastToken if everything left in the string is a space
-//		}
-
-		///------------------------------------------------------------
-		//condition 1) if we reach a connector, or reach end of string, 
-		//tokenize what came before it (should be a command)
-		
-		//Condition 2) also, if we reach a space and if result is greater 
-		//than zero, tokenize what came before it [tokenize will not insert this]
-		///------------------------------------------------------------
 
 		///------------------------------------------------------------
 		//condition 1) if we reach a connector, or reach end of string,
@@ -515,109 +498,7 @@ void BinaryTokenCmdTree::parseAndGenerateCmdTree(string line)
 	}
 }
 
-/*
-void BinaryTokenCmdTree::tokenize(bool isLastToken, string line) {
-	if (line.size() > 0 && isOr(line.at(0)))
-	{
-		//push regularToken to the vector for all previous non special tokens
-		this->insert(regularToken);
-		regularToken = new Token;
 
-		this->insert(new Token(line));
-
-	}
-	else if (line.size() > 0 && isAnd(line.at(0)))
-	{
-		//push regularToken to the vector for all previous non special tokens
-		this->insert(regularToken);
-		regularToken = new Token;
-
-		//push currentValue
-
-		this->insert(new Token(line));
-	}
-	else if (line.size() > 0 && isSemicolon(line.at(0)))
-	{
-		//push regularToken to the vector for all previous non special tokens
-		this->insert(regularToken);
-		regularToken = new Token;
-
-		//push currentValue
-
-		this->insert(new Token(line));
-	}
-	else
-	{
-
-		if (line.size() > 0 && !isNull(line.at(0)))
-		{
-			regularToken->appendValue(line);
-		}
-
-		if (line.size() > 0 && isNull(line.at(0)) && !isLastToken)
-		{
-			this->insert(regularToken);
-			regularToken = new Token;
-		}
-		
-		if (line.size() > 0 && isLastToken) {
- 			this->insert(regularToken); 
- 		}
-	}
-}
-
-
-void BinaryTokenCmdTree::tokenizeWithinParenthesis(bool isLastToken, string line){
-
-	if (line.size() > 0 && isOr(line.at(0)))
-	{
-		//push regularToken to the vector for all previous non special tokens
-		helperRootPtr = this->_insert(helperRootPtr, new BinaryNode(regularToken));
-		regularToken = new Token;
-
-		helperRootPtr = this->_insert(helperRootPtr, new BinaryNode(new Token(line)));
-
-	}
-	else if (line.size() > 0 && isAnd(line.at(0)))
-	{
-		//push regularToken to the vector for all previous non special tokens
-		helperRootPtr = this->_insert(helperRootPtr, new BinaryNode(regularToken));
-		regularToken = new Token;
-
-		//push currentValue
-
-		helperRootPtr = this->_insert(helperRootPtr, new BinaryNode(new Token(line)));
-	}
-	else if (line.size() > 0 && isSemicolon(line.at(0)))
-	{
-		//push regularToken to the vector for all previous non special tokens
-		helperRootPtr = this->_insert(helperRootPtr, new BinaryNode(regularToken));
-		regularToken = new Token;
-
-		//push currentValue
-
-		helperRootPtr = this->_insert(helperRootPtr, new BinaryNode(new Token(line)));
-	}
-	else
-	{
-		if (line.size() > 0 && !isNull(line.at(0)))
-		{
-			regularToken->appendValue(line);
-		}
-
-		//in case caller is right parenthesis, we need to make sure _insert isn't duplicated
-		if (line.size() > 0 && isNull(line.at(0) && !isLastToken)) {
-			helperRootPtr = this->_insert(helperRootPtr, new BinaryNode(regularToken));
-			regularToken = new Token;
-		}
-
-		if (line.size() > 0 && isLastToken) {
-			helperRootPtr = this->_insert(helperRootPtr, new BinaryNode(regularToken));
-		}
-	}
-
-}
-*/
 
 bool BinaryTokenCmdTree::isSpace(char val) {
 	return val == ' ';

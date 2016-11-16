@@ -14,18 +14,18 @@ private:
 
 public:
 	// constructors
-	BinaryNode() { item = 0; leftPtr = 0; rightPtr = 0; continueExecution = true; /*executionFunction = new Executor()*/}
-	BinaryNode(Token* anItem) { item = anItem; leftPtr = 0; rightPtr = 0; continueExecution = true; /*executionFunction = new Executor()*/}
+	BinaryNode() { item = 0; leftPtr = 0; rightPtr = 0; continueExecution = true; executionFunction = new Executor(); }
+	BinaryNode(Token* anItem) { item = anItem; leftPtr = 0; rightPtr = 0; continueExecution = true; executionFunction = new Executor(); }
 	BinaryNode(Token* anItem,
 		BinaryNode* left,
 		BinaryNode* right) {
-		item = anItem; leftPtr = left; rightPtr = right; continueExecution = true; /*executionFunction = new Executor()*/
+		item = anItem; leftPtr = left; rightPtr = right; continueExecution = true; executionFunction = new Executor();
 	}
 	~BinaryNode()
 	{
 		//delete /*executionFunction,*/ leftPtr;
 		//delete rightPtr;
-		//delete executionFunction;
+		delete executionFunction;
 		delete item;
 		leftPtr = 0;
 		rightPtr = 0;
@@ -42,13 +42,10 @@ public:
 	bool getContinueExecution() const { return continueExecution; }
 
 	bool execute() {
-		if (!isLeaf())
+		if (!isLeaf() && !leftPtr->getContinueExecution())
 		{
-			if (!leftPtr->getContinueExecution())
-			{
-				continueExecution = false;
-				return false;
-			}
+			continueExecution = false;
+			return false;
 		}
 
 		if (isOr())
@@ -93,11 +90,13 @@ public:
 		}
 		else if (isExit()) {
 			continueExecution = false;
+			return false;
 		}
 		else {
-			//executionFunction->setVector(this->getItem()->getSubTokensVect());					//need to make setVector mutator in Executor
-			//return executionFunction->execute();
+			executionFunction->setVector(this->getItem()->getSubTokensVect());					//need to make setVector mutator in Executor
+			return executionFunction->execute();
 		}
+		return true;
 	}
 
 	bool isLeaf() const { return (leftPtr == 0 && rightPtr == 0); }
