@@ -8,7 +8,7 @@ private:
 	Token* item;         // Data portion
 	BinaryNode* leftPtr;		// Pointer to left child
 	BinaryNode* rightPtr;		// Pointer to right child
-//	Executor* executionFunction;
+	Executor* executionFunction;
 	bool continueExecution;
 
 
