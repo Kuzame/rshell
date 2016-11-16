@@ -109,7 +109,6 @@ void BinaryTokenCmdTree::execute() {
 void BinaryTokenCmdTree::parseAndGenerateCmdTree(string line)
 {
 	bool isParenth = false;
-	bool throwError = false;
 	bool lastToken = false;
 	
 	string result;				//the value of a token to be created is stored here
