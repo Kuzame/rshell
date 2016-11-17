@@ -13,8 +13,7 @@ private:
 	int pip[2]; // for closing cases on pipe
 	pid_t child, c; //fork's value will be stored inside of the child, and c is used for waiting
 	int cstatus; //cstatus is very crucial to determine the state of previousState (connector handlers)
-//	Tokenizer * tokenizer; //a temporary variable that points to the actual tokenizer given from class Tokenizer
-	vector <string> temp;
+	vector <string> temp; //previously, we use tokenizer. Now we'll get simpler data, a vector string inside of token
 	
 	void executor (unsigned i) { // for regular execution, when we need execvp to check most cases
 		int size = (int) temp.size();
@@ -49,7 +48,6 @@ private:
 			while (c== -1);
 			if (cstatus!=0) previousState=false;	//determine the status of whether the child's execvp failed/not here
 			else previousState=true;
-			//cout<<"Parent said: child " << c << " exits. Now back to parent: " << getpid()<<endl; // for debugging
 			close(pip[0]);
 			
 		}
@@ -67,7 +65,7 @@ private:
 			cout<< "(TRUE without argument)"<<endl;
 		}
 		else if (size ==2) {
-			flag = "-e"; //automatically assume the default -e, so we can still test. Ex, it is valid to check: test ~/Documents
+			flag = "-e"; //automatically assume the default -e, so we can still test. Ex, it is valid to check: test /usr/
 			path = temp.at(1);
 		}
 		else {
@@ -109,12 +107,6 @@ private:
 			cout<<"Flag "<<flag<<" is not recognized (FALSE)"<<endl;
 			return false;
 		}
-//		cout<< "Flag is: " << flag <<endl;
-//		
-//		cout<< "Path is: " <<path<<endl;
-//		cout<< "Status: "<<status<<endl;
-		
-//		return true;
 	}
 	
 	int isFirstTime() { // this is just to set up a pipe
@@ -131,42 +123,23 @@ private:
 	}
 	
 	int operatorHandling (unsigned i) {
-		if (temp.at(0) == "||") {
-			return 0; // 0 is for OR
-		}
-		else if (temp.at(0) == "&&") {
-			return 1; // 1 is for AND
-		}
-		else if (temp.at(0) == ";") {
-			return 2; // 2 is for Semicolon
-		}
-		else if (temp.at(0) == "exit") {
-			return 3; // 3 is for exit
-		}
-		else if (temp.at(0) == "test") {
-			return 7; // 7 is for test
+		if (temp.at(0) == "test") {
+			return 2; // 2 is for test
 		}
 		else if (temp.at(0) == "" || temp.at(0) == "\0") {
 			return 99; // if user enter nothing, do nothing
 		}
-		else return 4; // 4 is for normal operation
+		else return 1; // 1 is for normal operation
 	}
 	
 public:
 	Executor () {}
 	Executor (vector <string> temp) {
-//		this->tokenizer = tokenizer;
 		this->temp = temp;
 		this->previousState=true;
 		this->firstTime=true;
 		this->execute();
 	}
-	
-//	void setTokenizer (Tokenizer * tokenizer) {
-//		this->tokenizer = tokenizer;
-//		this->previousState=true;
-//		this->firstTime=true;
-//	}
 	
 	void setVector (vector <string> temp) {
 		this->temp = temp;
@@ -175,53 +148,20 @@ public:
 	}
 	
 	bool execute() {
-		// cout<< "tokenizer's size is " << tokenizer->getVector().size()<<endl; // for debugging
-//		if (tokenizer->getVector().size()==0) return false; // such as performing Ctrl+D
-//		cout<<"not even here yet";
-//		for (unsigned i = 0; i < temp.size(); i++)
-//		{
-
         bool executionValidity;
         cases = operatorHandling(0);
-		//	cout << "-----i="<<i<<" & "<<previousState << " < prevState-----"<< getpid()<<"\n"; //for debugging
 			switch (cases) {
-				case 0: { // case ||
+				case 1: { // case normal operations
 					if (previousState) {
-//						i++;		//should skip the next token if the previousState is true
-					}
-					else previousState=true;
-				}; break;
-					
-				case 1: { // case &&
-					if (previousState) {
-									//if it's true, treat this and as if it's a semicolon
-					}
-					else ;//i++;
-				}; break;
-					
-				case 2: { // case ;
-					previousState=true;
-									// do nothing for this token, aka move on and assume previous state condition is true
-				}; break;
-					
-				case 3: { // case exit
-					return false;	//force exit this for loop
-				}
-					
-				case 4: { // case normal operations
-					if (previousState) {
-						executor(0);//present the tokens to execvp
+						executor(0);//present the vector of strings to execvp
                         executionValidity = previousState;
 					}
 				}; break;
-				case 7: {
+				case 2: {
 					executionValidity = testExecutor(0);
 				};break;
-				default: break; //do nothing
+				default: executionValidity = true; break; //do nothing
 			}
-//		}
-		
-		//cout<< "###########  EXIT THE EXECUTE  #############\n";	//for debugging
 		return executionValidity;
 	}
 };

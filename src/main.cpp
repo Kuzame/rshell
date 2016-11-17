@@ -16,16 +16,39 @@
 #include <signal.h>
 #include "Base.h"
 #include "Token.h"
-//#include "Tokenizer.h"
 #include "Executor.h"
 #include "BinaryTokenCmdTree.h"
 
 using namespace std;
+void getInfo(string *result);
 
 int main(){
-	//----- <part extra credit> -----
+	string result;
+	getInfo(&result);
+	
+	//Basics needed to perform rshell
+	bool exitState=true;
+	BinaryTokenCmdTree *tree1 = new BinaryTokenCmdTree();	//tree objects
+	string input ; // = "echo Hello World && (test -e main.cpp || [-e rshell])";
+	
+	while (exitState) {
+		cout<<result;
+		getline(cin, input);
+		
+		tree1->parseAndGenerateCmdTree(input);
+		tree1->execute();
+		//exitState = tree1....getContinueExecution(); // <---############ Here Mario ##############
+		tree1->clear();
+		input="";
+
+	}
+	cout<< "The program exits!\n";
+	return 0;
+}
+
+void getInfo(string *result) {
 	//Components needed for getting user's username and local machine's name
-	string userLogin, result;
+	string userLogin;
 	int charSize=100;
 	char * localhost = new char [charSize];
 	int validHost = gethostname(localhost, charSize);//obtaining local machine's name
@@ -33,27 +56,10 @@ int main(){
 	
 	if (validHost!= -1 && pwd!=NULL) {
 		userLogin = pwd->pw_name;		//obtaining user's login name
-		result = userLogin + "@" + localhost + "$ ";
+		*result = userLogin + "@" + localhost + "$ ";
 	}
 	else { // in case access or permission is denied
 		cerr<< "Failed to obtain user's username and local machine's name\n";
-		result = "$ ";
+		*result = "$ ";
 	}
-	//----- </part extra credit> -----
-	
-	
-	//Basics needed to perform rshell
-//	string input;
-	//bool exitState=true;
-//	Executor * execute = new Executor();
-	BinaryTokenCmdTree *tree1 = new BinaryTokenCmdTree();	//tree objects
-	string input2 = "echo Hello World && (test -e main.cpp || [-e rshell])      ";
-	
-	
-	tree1->parseAndGenerateCmdTree(input2);
-	tree1->execute();
-
-	
-	cout<< "The program exits!\n";
-	return 0;
 }
