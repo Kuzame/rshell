@@ -217,9 +217,13 @@ void BinaryTokenCmdTree::parseAndGenerateCmdTree(string line)
 		else if (isQuote((currentChar.at(0))))
 		{
 			currentChar = " ";
-			if((i+1) <= line.length() && isQuote(line.at(i+1)))
+			if((i+1) == line.length())
 			{
-				currentChar = "\"";
+				if (isQuote(line.at(i)))
+				{
+					currentChar = "\"";
+				}
+
 			}
 			//case: ""
 			if (isQuote((currentChar.at(0))))
