@@ -217,17 +217,20 @@ void BinaryTokenCmdTree::parseAndGenerateCmdTree(string line)
 		else if (isQuote((currentChar.at(0))))
 		{
 			currentChar = " ";
-			if((i+1) == line.length() && isQuote(line.at(line.length())))
+			if((i+1) <= line.length() && isQuote(line.at(i+1)))
 			{
 				currentChar = "\"";
 			}
 			//case: ""
-			if (isQuote((nextChar.at(0))))
+			if (isQuote((currentChar.at(0))))
 			{
-				helperToken->appendValue(" ");												//adds empty string to Token
+				i++;	//to skip first quotation mark
+				i++;	//to skip second quotation mark
 
-																							//inserts token
-				if (isParenth)
+
+				helperToken->appendValue("");												//adds empty string to Token
+																							
+				if (isParenth)																//inserts token
 				{
 					this->helperRootPtr = this->_insert(helperRootPtr, new BinaryNode(helperToken));
 				}
@@ -274,13 +277,13 @@ void BinaryTokenCmdTree::parseAndGenerateCmdTree(string line)
 				if (isParenth)																//inserts Token to the tree
 				{
 					this->helperRootPtr = this->_insert(helperRootPtr, new BinaryNode(helperToken));
+					helperToken = new Token();
 				}
 				else
 				{
 					this->insert(helperToken);
-
+					helperToken = new Token();
 				}
-				helperToken = new Token();
 			}
 		}
 		
