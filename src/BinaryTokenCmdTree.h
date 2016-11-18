@@ -12,6 +12,7 @@ private:
 	// remove the leftmost node in the left subtree of nodePtr
 	BinaryNode* removeLeftmostNode(BinaryNode* nodePtr, Token & successor);
 
+	string getInputLine();
 	bool isSpace(char val);
 	bool isQuote(char val);
 	bool isOr(char val);
@@ -208,7 +209,72 @@ void BinaryTokenCmdTree::parseAndGenerateCmdTree(string line)
 
 			if (helperRootPtr->getItem()->getSubTokensVect().size() > 0)
 			{
-				rootPtr = this->_insert(rootPtr, helperRootPtr);				//inserts whatever got created in helperRootPtr if there is something in it	
+				rootPtr = this->_insert(rootPtr, helperRootPtr);							//inserts whatever got created in helperRootPtr if there is something in it	
+			}
+		}
+
+		//case: "
+		else if (isQuote((currentChar.at(0))))
+		{
+			//case: ""
+			if (isQuote((nextChar.at(0))))
+			{
+				helperToken->appendValue("");												//adds empty string to Token
+
+																							//inserts token
+				if (isParenth)
+				{
+					this->helperRootPtr = this->_insert(helperRootPtr, new BinaryNode(helperToken));
+				}
+				else
+				{
+					this->insert(helperToken);
+
+				}
+				helperToken = new Token();
+			}
+
+			//case: "* ; where * is any value other than "                           
+			else
+			{
+				result = "";																//clears the current result; (although, it should already be empty if correct command format entered)
+				currentChar = " ";															//since we don't need to preserve and we don't want to alter while loop below
+
+				i++;																		//to skip the quotation mark index and proceed to the next index
+				
+				for (bool exitState = false; !isQuote(currentChar.at(0)) && exitState == false; i++)
+				{														
+					if (i > line.length())													//if the next index is not within range of the input string
+					{
+						do
+						{
+							result += "\n";
+							result += this->getInputLine();
+						} while (!isQuote(result.at(result.length())));						//reloops until last index contains quote
+						exitState = true;
+					}
+					else																
+					{
+						currentChar = line.at(i);											//sets currentChar to the next value
+						if (!isQuote(currentChar.at(0)))
+						{
+							result += currentChar;											//appends currentChar to result
+						}
+					}
+				}
+
+				helperToken->appendValue(result);											//appends the value to the helperToken
+																							
+				if (isParenth)																//inserts Token to the tree
+				{
+					this->helperRootPtr = this->_insert(helperRootPtr, new BinaryNode(helperToken));
+				}
+				else
+				{
+					this->insert(helperToken);
+
+				}
+				helperToken = new Token();
 			}
 		}
 		
@@ -439,6 +505,16 @@ void BinaryTokenCmdTree::parseAndGenerateCmdTree(string line)
 	{
 		delete helperToken;
 	}
+}
+
+//gets user input
+string BinaryTokenCmdTree::getInputLine() {
+	string tempLine;
+	cout << "\n>> ";
+	cin.clear();
+	cin.ignore(INT_MAX);
+	getline(cin, tempLine);
+	return tempLine;
 }
 
 //returns true if character is a space
