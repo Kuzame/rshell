@@ -27,7 +27,7 @@ int main(){
 	getInfo(&result);
 	
 	//Basics needed to perform rshell
-	bool exitState=true;
+	bool exitState = true;
 	BinaryTokenCmdTree *tree1 = new BinaryTokenCmdTree();	//tree objects
 	string input ; // = "echo Hello World && (test -e main.cpp || [-e rshell])";
 	
@@ -37,7 +37,7 @@ int main(){
 		
 		tree1->parseAndGenerateCmdTree(input);
 		tree1->execute();
-		//exitState = tree1....getContinueExecution(); // <---############ Here Mario ##############
+		exitState = tree1->getContinueExecution(); // <---############ Here Mario ##############
 		tree1->clear();
 		input="";
 

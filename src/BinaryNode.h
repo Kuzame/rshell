@@ -1,16 +1,14 @@
 #ifndef _BINARY_NODE
 #define _BINARY_NODE
 
-
 class BinaryNode
 {
 private:
-	Token* item;         // Data portion
-	BinaryNode* leftPtr;		// Pointer to left child
-	BinaryNode* rightPtr;		// Pointer to right child
-	Executor* executionFunction;
-	bool continueExecution;
-
+	Token* item;                    // Data portion
+	BinaryNode* leftPtr;		    // Pointer to left child
+	BinaryNode* rightPtr;		    // Pointer to right child
+	Executor* executionFunction;    // Execution function for node to execute if it's a child
+	bool continueExecution;         // Stores whether or not it should continue executing functions or not
 
 public:
 	// constructors
@@ -23,8 +21,6 @@ public:
 	}
 	~BinaryNode()
 	{
-		//delete /*executionFunction,*/ leftPtr;
-		//delete rightPtr;
 		delete executionFunction;
 		delete item;
 		leftPtr = 0;
@@ -40,7 +36,10 @@ public:
 	BinaryNode* getLeftPtr() const { return leftPtr; }
 	BinaryNode* getRightPtr() const { return rightPtr; }
 	bool getContinueExecution() const { return continueExecution; }
-
+    
+    //handles execution for children of ||, && and ; connectors
+    //handles exiting execution if exit command is entered
+    //handles execution of leaf nodes using Executor class object
 	bool execute() {
 		if (!isLeaf() && !leftPtr->getContinueExecution())
 		{
@@ -99,12 +98,23 @@ public:
 		return true;
 	}
 
+    // returns true  if the node does not have a left or right pointer
 	bool isLeaf() const { return (leftPtr == 0 && rightPtr == 0); }
+    
+    // returns true if the item is an or 
 	bool isOr() const { return (item->isOr()); }
-	bool isAnd() const { return (item->isAnd()); }
-	bool isSemicolon() const { return (item->isSemicolon()); }
-	bool isExit() const { return (item->isExit()); }
-	bool isTest() const { return (item->isTest()); }
+	
+    // returns true if the item is an and
+    bool isAnd() const { return (item->isAnd()); }
+	
+    // returns true if the item is a semicolon
+    bool isSemicolon() const { return (item->isSemicolon()); }
+	
+    // returns true if the item is an exit command
+    bool isExit() const { return (item->isExit()); }
+	
+    // returns true if the item is a test command 
+    bool isTest() const { return (item->isTest()); }
 
 };
 #endif 
