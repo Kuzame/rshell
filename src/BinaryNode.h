@@ -35,12 +35,13 @@ public:
 	Token* getItem() const { return item; }
 	BinaryNode* getLeftPtr() const { return leftPtr; }
 	BinaryNode* getRightPtr() const { return rightPtr; }
-	bool getContinueExecution() const { return continueExecution; }
+	bool getContinueExecution() const { if (this == NULL) return true; return continueExecution; }
     
     //handles execution for children of ||, && and ; connectors
     //handles exiting execution if exit command is entered
     //handles execution of leaf nodes using Executor class object
 	bool execute() {
+		if (this == NULL) return false;
 		if (!isLeaf() && !leftPtr->getContinueExecution())
 		{
 			continueExecution = false;
