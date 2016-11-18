@@ -42,7 +42,7 @@ public:
 	//added for rshell 2.0
 	void execute();
 	void parseAndGenerateCmdTree(string line);
-    bool getContinueExecution();
+	bool getContinueExecution();
 };
 ///////////////////////// public function definitions ///////////////////////////
 
@@ -67,8 +67,8 @@ BinaryNode* BinaryTokenCmdTree::_insert(BinaryNode* nodePtr,
 	BinaryNode* newNodePtr)
 {
 
-    count++;
-    //is dependent on syntax [cmd] [connector] [cmd]
+	count++;
+	//is dependent on syntax [cmd] [connector] [cmd]
 	//case where there is nothing in the tree so we load a single command into it
 
 	if (nodePtr == 0)						//case where the nodePtr has not been loaded with data yet (IF IT IS AN ARGUMENT WITH PARENTHESIS IT WILL SIMPLY REPLACE THIS TREE WITH THE OTHER)
@@ -78,18 +78,18 @@ BinaryNode* BinaryTokenCmdTree::_insert(BinaryNode* nodePtr,
 	else if (newNodePtr->isOr() || newNodePtr->isAnd() || newNodePtr->isSemicolon()){
 
 		//case where the newNodePtr does not have a left child already (NOT A PARENTHESIS CASE)
-		if (newNodePtr->getLeftPtr() == 0)	
+		if (newNodePtr->getLeftPtr() == 0)
 		{
 			newNodePtr->setLeftPtr(copyTree(nodePtr));
 			nodePtr = newNodePtr;
 		}
 
 		//case where the newNodePtr does have a left child (IF IT IS AN ARGUMENT WITH PARENTHESIS THIS WILL HAPPEN, BECAUSE A ROOTPTR WILL BE PASSED WITH CHILDREN)
- 		else {
+		else {
 			nodePtr->setRightPtr(newNodePtr);
 		}
 	}
-	
+
 	//case where the newNodePtr is not a connector (not And, not Or, not Semicolon); it is an argument
 	else {
 		nodePtr->setRightPtr(newNodePtr);
@@ -136,6 +136,8 @@ void BinaryTokenCmdTree::parseAndGenerateCmdTree(string line)
 			lastToken = true;
 			nextChar = -1;
 		}
+
+
 
 		///------------------------------------------------------------
 		//condition 1) if we reach a connector, or reach end of string,
@@ -217,24 +219,38 @@ void BinaryTokenCmdTree::parseAndGenerateCmdTree(string line)
 		else if (isQuote((currentChar.at(0))))
 		{
 			currentChar = " ";
-			if((i+1) == line.length())
+			result = "";																//clears the current result; (although, it should already be empty if correct command format entered)
+
+			//helps case that only a single quote is entered
+			//case: "
+			if (lastToken)
 			{
-				if (isQuote(line.at(i)))
+				do
 				{
-					currentChar = "\"";
+					result += "\n";
+					result += this->getInputLine();
+				} while (!isQuote(result.at(result.length()-1)));						//reloops until last index contains quote
+				result.erase(result.length() - 1);
+				helperToken->appendValue(result);											//appends the value to the helperToken
+
+				if (isParenth)																//inserts Token to the tree
+				{
+					this->helperRootPtr = this->_insert(helperRootPtr, new BinaryNode(helperToken));
 				}
+				else
+				{
+					this->insert(helperToken);
 
+				}
 			}
+
 			//case: ""
-			if (isQuote((currentChar.at(0))))
+			else if (isQuote((nextChar.at(0))))
 			{
-				i++;	//to skip first quotation mark
-				i++;	//to skip second quotation mark
+				helperToken->appendValue(" ");												//adds empty string to Token
 
-
-				helperToken->appendValue("");												//adds empty string to Token
-																							
-				if (isParenth)																//inserts token
+				//inserts token
+				if (isParenth)
 				{
 					this->helperRootPtr = this->_insert(helperRootPtr, new BinaryNode(helperToken));
 				}
@@ -249,24 +265,24 @@ void BinaryTokenCmdTree::parseAndGenerateCmdTree(string line)
 			//case: "* ; where * is any value other than "                           
 			else
 			{
-				result = "";																//clears the current result; (although, it should already be empty if correct command format entered)
 				currentChar = " ";															//since we don't need to preserve and we don't want to alter while loop below
 
 				i++;																		//to skip the quotation mark index and proceed to the next index
-				
+
 				for (bool exitState = false; !isQuote(currentChar.at(0)) && exitState == false; i++)
-				{														
-					if (i > line.length())													//if the next index is not within range of the input string
+				{
+					if (i == line.length())													//if the next index is not within range of the input string
 					{
 						do
 						{
 							result += "\n";
 							result += this->getInputLine();
-						} while (!isQuote(result.at(result.length())));						//reloops until last index contains quote
+						} while (!isQuote(result.at(result.length()-1)));						//reloops until last index contains quote
+						result.erase(result.length() - 1);
 						currentChar = "\"";
 						exitState = true;
 					}
-					else																
+					else
 					{
 						currentChar = line.at(i);											//sets currentChar to the next value
 						if (!isQuote(currentChar.at(0)))
@@ -277,22 +293,22 @@ void BinaryTokenCmdTree::parseAndGenerateCmdTree(string line)
 				}
 
 				helperToken->appendValue(result);											//appends the value to the helperToken
-																							
+
 				if (isParenth)																//inserts Token to the tree
 				{
 					this->helperRootPtr = this->_insert(helperRootPtr, new BinaryNode(helperToken));
-					helperToken = new Token();
 				}
 				else
 				{
 					this->insert(helperToken);
-					helperToken = new Token();
+
 				}
+				helperToken = new Token();
 			}
 		}
-		
+
 		//case: [
-		else if(isLeftBracket(currentChar.at(0)))
+		else if (isLeftBracket(currentChar.at(0)))
 		{
 			if (nextChar == " ")
 			{
@@ -301,12 +317,12 @@ void BinaryTokenCmdTree::parseAndGenerateCmdTree(string line)
 			else
 			{
 				helperToken->appendValue("test");
-				
+
 			}
 		}
 
 		//case: ]
-		else if(isRightBracket(currentChar.at(0)))
+		else if (isRightBracket(currentChar.at(0)))
 		{
 			//if there is still something in result, then append the value to the helperToken and insert
 			//handles appending
@@ -330,7 +346,7 @@ void BinaryTokenCmdTree::parseAndGenerateCmdTree(string line)
 				}
 				helperToken = new Token();
 			}
-		
+
 		}
 
 		//case: ||
@@ -482,7 +498,7 @@ void BinaryTokenCmdTree::parseAndGenerateCmdTree(string line)
 			//the only time a command will tokenize and insert itself is if this is the lastToken
 			//in every other situation a connector can tokenize it
 			if (lastToken)
-			{			
+			{
 				//if there is still something in result, then append the value to the helperToken and insert
 				//handles appending
 				if (result.size() > 0)
@@ -525,7 +541,7 @@ string BinaryTokenCmdTree::getInputLine() {
 	string tempLine;
 	cout << "\n>> ";
 	cin.clear();
-	cin.ignore();
+	//cin.ignore();
 	getline(cin, tempLine);
 	return tempLine;
 }
