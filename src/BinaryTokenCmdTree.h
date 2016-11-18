@@ -216,10 +216,15 @@ void BinaryTokenCmdTree::parseAndGenerateCmdTree(string line)
 		//case: "
 		else if (isQuote((currentChar.at(0))))
 		{
+			currentChar = " ";
+			if((i+1) == line.length() && isQuote(line.at(line.length())))
+			{
+				currentChar = "\"";
+			}
 			//case: ""
 			if (isQuote((nextChar.at(0))))
 			{
-				helperToken->appendValue("");												//adds empty string to Token
+				helperToken->appendValue(" ");												//adds empty string to Token
 
 																							//inserts token
 				if (isParenth)
@@ -251,6 +256,7 @@ void BinaryTokenCmdTree::parseAndGenerateCmdTree(string line)
 							result += "\n";
 							result += this->getInputLine();
 						} while (!isQuote(result.at(result.length())));						//reloops until last index contains quote
+						currentChar = "\"";
 						exitState = true;
 					}
 					else																
@@ -512,7 +518,7 @@ string BinaryTokenCmdTree::getInputLine() {
 	string tempLine;
 	cout << "\n>> ";
 	cin.clear();
-	cin.ignore(INT_MAX);
+	cin.ignore();
 	getline(cin, tempLine);
 	return tempLine;
 }
