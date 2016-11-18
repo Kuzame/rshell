@@ -62,7 +62,8 @@ private:
 		string flag, path;
 		
 		if (size == 1) {
-			cout<< "(TRUE without argument)"<<endl;
+			cout<< "(FALSE without argument)"<<endl;
+			return false;
 		}
 		else if (size ==2) {
 			flag = "-e"; //automatically assume the default -e, so we can still test. Ex, it is valid to check: test /usr/
