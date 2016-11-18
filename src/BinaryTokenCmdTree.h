@@ -107,6 +107,8 @@ void BinaryTokenCmdTree::execute() {
 //returns whether or not to continue with the program or not by checking exit
 //command in binaryNode
 bool BinaryTokenCmdTree::getContinueExecution(){
+	if (rootPtr->getLeftPtr() != NULL && rootPtr->getLeftPtr()->getContinueExecution() == false ) return false;
+	if (rootPtr->getRightPtr() != NULL && rootPtr->getRightPtr()->getContinueExecution() == false ) return false;
 	return rootPtr->getContinueExecution(); //
 }
 

@@ -33,8 +33,8 @@ public:
 	void setRightPtr(BinaryNode* right) { rightPtr = right; }
 	// mutators
 	Token* getItem() const { return item; }
-	BinaryNode* getLeftPtr() const { return leftPtr; }
-	BinaryNode* getRightPtr() const { return rightPtr; }
+	BinaryNode* getLeftPtr() const { if (leftPtr == NULL || leftPtr == 0) return NULL;return leftPtr; }
+	BinaryNode* getRightPtr() const {if (rightPtr == NULL || rightPtr == 0) return NULL; return rightPtr; }
 	bool getContinueExecution() const { if (this == NULL) return true; return continueExecution; }
     
     //handles execution for children of ||, && and ; connectors

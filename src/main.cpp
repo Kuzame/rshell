@@ -30,15 +30,20 @@ int main(){
 	bool exitState = true;
 	BinaryTokenCmdTree *tree1 = new BinaryTokenCmdTree();	//tree objects
 	string input ; // = "echo Hello World && (test -e main.cpp || [-e rshell])";
+	int checkSpaces;
 	
 	while (exitState) {
+		checkSpaces=-1;
 		cout<<result;
 		getline(cin, input);
+		checkSpaces = (int)input.find_first_not_of(" "); // to prevent error when user inputs only space
 		
-		tree1->parseAndGenerateCmdTree(input);
-		tree1->execute();
-		exitState = tree1->getContinueExecution(); // <---############ Here Mario ##############
-		tree1->clear();
+		if (input != "" && checkSpaces != -1) { //and if the user inputs nothing
+			tree1->parseAndGenerateCmdTree(input);
+			tree1->execute();
+			exitState = tree1->getContinueExecution();
+			tree1->clear();
+		}
 		input="";
 
 	}
