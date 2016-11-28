@@ -56,7 +56,7 @@ private:
 		delete * args; //prevent memory leak
 	}
 	
-	bool testExecutor(unsigned i) { // for the special test cases
+	bool testExecutor() { // for the special test cases
 		struct stat test;
 		int size = (int) temp.size();
 		string flag, path;
@@ -110,6 +110,16 @@ private:
 		}
 	}
 	
+	bool cdExecutor () {
+		int ret;
+		
+		ret = chdir (temp.at(1).c_str());
+		if (ret == -1) {
+			cout<< "Failed to do cd!\n";
+		}
+		return true;
+	}
+	
 	int isFirstTime() { // this is just to set up a pipe
 		if (firstTime) {
 			pipe(pip);
@@ -126,6 +136,9 @@ private:
 	int operatorHandling (unsigned i) {
 		if (temp.at(0) == "test") {
 			return 2; // 2 is for test
+		}
+		if (temp.at(0) == "cd") {
+			return 3; // 2 is for test
 		}
 		else if (temp.at(0) == "" || temp.at(0) == "\0") {
 			return 99; // if user enter nothing, do nothing
@@ -159,7 +172,10 @@ public:
 					}
 				}; break;
 				case 2: {
-					executionValidity = testExecutor(0);
+					executionValidity = testExecutor();
+				};break;
+				case 3: {
+					executionValidity = cdExecutor();
 				};break;
 				default: executionValidity = true; break; //do nothing
 			}
