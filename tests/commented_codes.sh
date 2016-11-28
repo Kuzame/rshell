@@ -19,7 +19,7 @@ echo -e 'echo #Hello WOrld ; test -e /#
 exit' | ../bin/rshell
 echo "
 ----- Test commented_codes.h 5 ------"
-echo -e ' #test -e /usr/bin ###### 
+echo -e ' asdf #test -e /usr/bin ###### 
 exit'| ../bin/rshell
 echo "###### END  COMMENTED_CODES.H TEST #####
 "

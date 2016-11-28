@@ -13,30 +13,30 @@ RShell is a program that emulates the interface of a terminal. The program uses 
 ```sh
 $ git clone https://github.com/mario773199/rshell.git
 $ cd rshell
-$ git checkout hw2
+$ git checkout hw3
 $ make
 $ bin/rshell
 ```
 
  
-### Valid connectors
+### Valid connectors and operators
     ;
     ||
     &&
     #
+    []
     ()
 
 ### Known Bugs
-- Commands with quotation marks will not preserve original order of input (echo "Hello _ _ _ World" will display as "Hello _ World" where _ represents a space)
+- Commands with incomplete parenthesis or brackets do not execute properly
 - Arrow keys do not navigate through the text currently being typed (must use backspace to go back)
 - Functionality to change directories is not implemented (will result in unknown command error)
 
 
 ### Todos
 
- - Handle parenthesis and order of operations
  - Handle user arrow keys to navigate input
-
+ - Handle cd commands
 License
 ----
 
