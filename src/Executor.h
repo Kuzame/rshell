@@ -15,6 +15,7 @@ private:
 	int cstatus; //cstatus is very crucial to determine the state of previousState (connector handlers)
 	vector <string> temp; //previously, we use tokenizer. Now we'll get simpler data, a vector string inside of token
 	
+	
 	void executor (unsigned i) { // for regular execution, when we need execvp to check most cases
 		int size = (int) temp.size();
 		char ** args = new char * [size+1];
@@ -112,11 +113,32 @@ private:
 	
 	bool cdExecutor () {
 		int ret;
+		char tempChar[256];
+		int size = (int) temp.size();
+		strcpy(tempChar, getcwd(tempChar, sizeof(tempChar)));
+		if (size == 1 || temp.at(1) == "~") {
+			chdir(getenv("HOME"));
+			setenv("OLDPWD", tempChar, 1);
+			return true;
+		}
+		
+		if (temp.at(1) == "-") {
+			char *temporary = getenv("OLDPWD");
+			if (temporary !=NULL)
+			chdir(temporary);
+			setenv("OLDPWD", tempChar, 1);
+			
+			return true;
+		}
+		
+		setenv("OLDPWD", tempChar, 1);
 		
 		ret = chdir (temp.at(1).c_str());
 		if (ret == -1) {
 			cout<< "Failed to do cd!\n";
+			return false;
 		}
+		
 		return true;
 	}
 	
@@ -152,7 +174,6 @@ public:
 		this->temp = temp;
 		this->previousState=true;
 		this->firstTime=true;
-		this->execute();
 	}
 	
 	void setVector (vector <string> temp) {

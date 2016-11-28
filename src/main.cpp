@@ -31,6 +31,9 @@ int main(){
 	BinaryTokenCmdTree *tree1 = new BinaryTokenCmdTree();	//tree objects
 	string input ; // = "echo Hello World && (test -e main.cpp || [-e rshell])";
 	int checkSpaces;
+	char tempChar [256];
+	strcpy(tempChar, getcwd(tempChar, sizeof(tempChar)));
+	setenv("OLDPWD", tempChar, 1);
 	
 	while (exitState) {
 		checkSpaces=-1;
