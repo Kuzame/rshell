@@ -4,6 +4,7 @@
  Mario Salazar
 */
 
+#include <stdlib.h>
 #include <iostream>
 #include <cstring>
 #include <string>
