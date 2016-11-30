@@ -180,6 +180,7 @@ void BinaryTokenCmdTree::parseAndGenerateCmdTree(string line)
 		//case: (
 		else if (isLeftParenthesis(currentChar.at(0)))
 		{
+			helperRootPtr = 0;
 			isParenth = true;
 		}
 
@@ -214,100 +215,101 @@ void BinaryTokenCmdTree::parseAndGenerateCmdTree(string line)
 			if (helperRootPtr->getItem()->getSubTokensVect().size() > 0)
 			{
 				rootPtr = this->_insert(rootPtr, helperRootPtr);							//inserts whatever got created in helperRootPtr if there is something in it	
+				//helperRootPtr = new BinaryNode;
 			}
 		}
 
-		//case: "
-		else if (isQuote((currentChar.at(0))))
-		{
-			currentChar = " ";
-			result = "";																//clears the current result; (although, it should already be empty if correct command format entered)
-
-			//helps case that only a single quote is entered
-			//case: "
-			if (lastToken)
-			{
-				do
-				{
-					result += "\n";
-					result += this->getInputLine();
-				} while (!isQuote(result.at(result.length()-1)));						//reloops until last index contains quote
-				result.erase(result.length() - 1);
-				helperToken->appendValue(result);											//appends the value to the helperToken
-
-				if (isParenth)																//inserts Token to the tree
-				{
-					this->helperRootPtr = this->_insert(helperRootPtr, new BinaryNode(helperToken));
-				}
-				else
-				{
-					this->insert(helperToken);
-
-				}
-			}
-
-			//case: ""
-			else if (isQuote((nextChar.at(0))))
-			{
-				helperToken->appendValue(" ");												//adds empty string to Token
-
-				//inserts token
-				if (isParenth)
-				{
-					this->helperRootPtr = this->_insert(helperRootPtr, new BinaryNode(helperToken));
-				}
-				else
-				{
-					this->insert(helperToken);
-
-				}
-				helperToken = new Token();
-			}
-
-			//case: "* ; where * is any value other than "                           
-			else
-			{
-				currentChar = " ";															//since we don't need to preserve and we don't want to alter while loop below
-
-				i++;																		//to skip the quotation mark index and proceed to the next index
-
-				for (bool exitState = false; !isQuote(currentChar.at(0)) && exitState == false; i++)
-				{
-					if (i == line.length())													//if the next index is not within range of the input string
-					{
-						do
-						{
-							result += "\n";
-							result += this->getInputLine();
-						} while (!isQuote(result.at(result.length()-1)));						//reloops until last index contains quote
-						result.erase(result.length() - 1);
-						currentChar = "\"";
-						exitState = true;
-					}
-					else
-					{
-						currentChar = line.at(i);											//sets currentChar to the next value
-						if (!isQuote(currentChar.at(0)))
-						{
-							result += currentChar;											//appends currentChar to result
-						}
-					}
-				}
-
-				helperToken->appendValue(result);											//appends the value to the helperToken
-
-				if (isParenth)																//inserts Token to the tree
-				{
-					this->helperRootPtr = this->_insert(helperRootPtr, new BinaryNode(helperToken));
-				}
-				else
-				{
-					this->insert(helperToken);
-
-				}
-				helperToken = new Token();
-			}
-		}
+// 		//case: "
+// 		else if (isQuote((currentChar.at(0))))
+// 		{
+// 			currentChar = " ";
+// 			result = "";																//clears the current result; (although, it should already be empty if correct command format entered)
+// 
+// 			//helps case that only a single quote is entered
+// 			//case: "
+// 			if (lastToken)
+// 			{
+// 				do
+// 				{
+// 					result += "\n";
+// 					result += this->getInputLine();
+// 				} while (!isQuote(result.at(result.length()-1)));						//reloops until last index contains quote
+// 				result.erase(result.length() - 1);
+// 				helperToken->appendValue(result);											//appends the value to the helperToken
+// 
+// 				if (isParenth)																//inserts Token to the tree
+// 				{
+// 					this->helperRootPtr = this->_insert(helperRootPtr, new BinaryNode(helperToken));
+// 				}
+// 				else
+// 				{
+// 					this->insert(helperToken);
+// 
+// 				}
+// 			}
+// 
+// 			//case: ""
+// 			else if (isQuote((nextChar.at(0))))
+// 			{
+// 				helperToken->appendValue(" ");												//adds empty string to Token
+// 
+// 				//inserts token
+// 				if (isParenth)
+// 				{
+// 					this->helperRootPtr = this->_insert(helperRootPtr, new BinaryNode(helperToken));
+// 				}
+// 				else
+// 				{
+// 					this->insert(helperToken);
+// 
+// 				}
+// 				helperToken = new Token();
+// 			}
+// 
+// 			//case: "* ; where * is any value other than "                           
+// 			else
+// 			{
+// 				currentChar = " ";															//since we don't need to preserve and we don't want to alter while loop below
+// 
+// 				i++;																		//to skip the quotation mark index and proceed to the next index
+// 
+// 				for (bool exitState = false; !isQuote(currentChar.at(0)) && exitState == false; i++)
+// 				{
+// 					if (i == line.length())													//if the next index is not within range of the input string
+// 					{
+// 						do
+// 						{
+// 							result += "\n";
+// 							result += this->getInputLine();
+// 						} while (!isQuote(result.at(result.length()-1)));						//reloops until last index contains quote
+// 						result.erase(result.length() - 1);
+// 						currentChar = "\"";
+// 						exitState = true;
+// 					}
+// 					else
+// 					{
+// 						currentChar = line.at(i);											//sets currentChar to the next value
+// 						if (!isQuote(currentChar.at(0)))
+// 						{
+// 							result += currentChar;											//appends currentChar to result
+// 						}
+// 					}
+// 				}
+// 
+// 				helperToken->appendValue(result);											//appends the value to the helperToken
+// 
+// 				if (isParenth)																//inserts Token to the tree
+// 				{
+// 					this->helperRootPtr = this->_insert(helperRootPtr, new BinaryNode(helperToken));
+// 				}
+// 				else
+// 				{
+// 					this->insert(helperToken);
+// 
+// 				}
+// 				helperToken = new Token();
+// 			}
+// 		}
 
 		//case: [
 		else if (isLeftBracket(currentChar.at(0)))
@@ -536,6 +538,11 @@ void BinaryTokenCmdTree::parseAndGenerateCmdTree(string line)
 	{
 		delete helperToken;
 	}
+
+	//if (helperRootPtr != 0)
+	//{
+	//	delete helperRootPtr;
+	//}
 }
 
 //gets user input
