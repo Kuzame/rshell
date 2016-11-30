@@ -1,4 +1,4 @@
-all: first
+all: clean first
 
 FLAGS = -Wall -Werror -ansi -pedantic -g
 CC = g++
