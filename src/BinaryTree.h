@@ -8,7 +8,11 @@ protected:
 	BinaryNode* rootPtr;				// ptr to root node
 	int count;							// number of nodes in tree
 	BinaryNode* helperRootPtr;          // helper tree node for creating a second tree in case of parenthesis
-    Token* regularToken;                // helper token for creating and appending strings to a Token before inserting to the tree
+	int numberOfParenth;				//contains the number of embedded parenthesis so far
+	int numberOfRightParenth;			//contains the number of right parenthesis encountered
+	vector<BinaryNode*> helperRootPtrLists;	//contains all of the helperRootPtrs that have been created so far
+	Token* regularToken;                // helper token for creating and appending strings to a Token before inserting to the tree	
+
 public:
 	BinaryTree() { rootPtr = 0; count = 0; regularToken = new Token; helperRootPtr = 0; }
 	BinaryTree(const BinaryTree & tree) { rootPtr = copyTree(tree.rootPtr); }
@@ -21,6 +25,7 @@ public:
 	void clear() { 
 		//cout << "\nClearing old tree\n\n"; 
 		destroyTree(this->rootPtr); 
+		if(!helperRootPtrLists.empty()){ helperRootPtrLists.clear();}		
 		this->rootPtr = 0; 
 		this->helperRootPtr = 0; 
 		regularToken = 0; 

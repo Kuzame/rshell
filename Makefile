@@ -1,6 +1,6 @@
 all: first
 
-FLAGS = -Wall -Werror -ansi -pedantic
+FLAGS = -Wall -Werror -ansi -pedantic -g
 CC = g++
 
 first:

@@ -29,7 +29,7 @@ int main(){
 	
 	//Basics needed to perform rshell
 	bool exitState = true;
-	BinaryTokenCmdTree *tree1 = new BinaryTokenCmdTree();	//tree objects
+	//BinaryTokenCmdTree *tree1 = new BinaryTokenCmdTree();	//tree objects
 	string input ; // = "echo Hello World && (test -e main.cpp || [-e rshell])";
 	int checkSpaces;
 	char tempChar [256];
@@ -37,6 +37,7 @@ int main(){
 	setenv("OLDPWD", tempChar, 1);
 	
 	while (exitState) {
+		BinaryTokenCmdTree *tree1 = new BinaryTokenCmdTree();	//tree objects
 		checkSpaces=-1;
 		cout<<result;
 		getline(cin, input);
@@ -46,7 +47,8 @@ int main(){
 			tree1->parseAndGenerateCmdTree(input);
 			tree1->execute();
 			exitState = tree1->getContinueExecution();
-			tree1->clear();
+			//tree1->clear();
+			delete tree1;
 		}
 		input="";
 

@@ -26,7 +26,7 @@ private:
 	bool isRightBracket(char val);
 
 public:
-	BinaryTokenCmdTree() { rootPtr = 0; count = 0; helperRootPtr = 0; }
+	BinaryTokenCmdTree() { rootPtr = 0; count = 0; helperRootPtr = 0;  }
 	BinaryTokenCmdTree(const BinaryTokenCmdTree & tree) { this->rootPtr = copyTree(tree.rootPtr); this->helperRootPtr = tree.helperRootPtr; }
 	~BinaryTokenCmdTree()
 	{
@@ -122,6 +122,7 @@ void BinaryTokenCmdTree::parseAndGenerateCmdTree(string line)
 	string currentChar;			        //the currentChar used in traversing through characters
 	string nextChar;				    //the nextChar used in finding the next character
 	Token* helperToken = new Token();   //temporary Token used for appending 
+	numberOfParenth = 0;
 
 	for (unsigned i = 0; i < line.length() && !lastToken; i++)
 	{
@@ -180,6 +181,18 @@ void BinaryTokenCmdTree::parseAndGenerateCmdTree(string line)
 		//case: (
 		else if (isLeftParenthesis(currentChar.at(0)))
 		{
+			if (isParenth)									//if isParenth is true when encountering a left parenthesis, it means that this is an embedded parenthesis
+			{
+				if (helperRootPtr != 0)						//if not case where left parenthesis are all in the right. ex: (((
+				{
+					helperRootPtrLists.push_back(helperRootPtr);
+					numberOfParenth++;
+				}
+				else
+				{
+					numberOfParenth++;
+				}
+			}
 			helperRootPtr = 0;
 			isParenth = true;
 		}
@@ -189,6 +202,7 @@ void BinaryTokenCmdTree::parseAndGenerateCmdTree(string line)
 		{
 			//if there is still something in result, then append the value to the helperToken and insert
 			//handles appending
+			numberOfRightParenth++;
 			if (result.size() > 0)
 			{
 				helperToken->appendValue(result);
@@ -210,12 +224,31 @@ void BinaryTokenCmdTree::parseAndGenerateCmdTree(string line)
 				helperToken = new Token();
 			}
 
-			isParenth = false;
+			//isParenth = false;
 
 			if (helperRootPtr->getItem()->getSubTokensVect().size() > 0)
 			{
-				rootPtr = this->_insert(rootPtr, helperRootPtr);							//inserts whatever got created in helperRootPtr if there is something in it	
-				//helperRootPtr = new BinaryNode;
+				if (numberOfParenth > 0){											
+					if (numberOfRightParenth > numberOfParenth)					//only performs the insertion at the very end of the embedded quotation marks
+					{
+						helperRootPtrLists.push_back(helperRootPtr);		//pushes the very last helperRootPtr
+
+						for (unsigned m = numberOfParenth; m > 0 ; m--)		//works if all right parenthesis close on the right side )))
+						{
+							helperRootPtrLists.at(m - 1)->setRightPtr(helperRootPtrLists.at(m));
+						}
+						isParenth = false;
+						rootPtr = this->helperRootPtrLists.at(0);
+						helperRootPtrLists.clear();
+					}
+				
+				}
+				else{			//non embedded parenthesis
+					isParenth = false;
+					rootPtr = this->_insert(rootPtr, helperRootPtr);							//inserts whatever got created in helperRootPtr if there is something in it	
+					//helperRootPtr = new BinaryNode;
+				}
+				
 			}
 		}
 
