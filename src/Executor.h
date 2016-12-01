@@ -133,9 +133,19 @@ private:
 		
 		setenv("OLDPWD", tempChar, 1);
 		
+		
+		
 		ret = chdir (temp.at(1).c_str());
 		if (ret == -1) {
-			cout<< "Failed to do cd!\n";
+			{	//testing if it's actually a file
+				struct stat test;
+				stat(temp.at(1).c_str(), &test);
+				if (S_ISREG(test.st_mode)) {
+					cout<<temp.at(1).c_str()<<" is a file! Cannot be cd-ed!"<<endl;
+					return false;
+				}
+			}
+			cout<< "File or Folder " <<"\"" << temp.at(1).c_str()<<"\""<<" not found!\n";
 			return false;
 		}
 		

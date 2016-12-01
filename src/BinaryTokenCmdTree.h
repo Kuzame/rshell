@@ -24,6 +24,7 @@ private:
 	bool isRightParenthesis(char val);
 	bool isLeftBracket(char val);
 	bool isRightBracket(char val);
+	bool isBackslash(char val);
 
 public:
 	BinaryTokenCmdTree() { rootPtr = 0; count = 0; helperRootPtr = 0;  }
@@ -385,6 +386,57 @@ void BinaryTokenCmdTree::parseAndGenerateCmdTree(string line)
 			}
 
 		}
+		else if (isBackslash(currentChar.at(0)))
+		{
+			if (++i < line.length() ) {
+				currentChar = line.at(i);
+				result += currentChar;
+				nextChar = line.at(i);
+			}
+			else { //check cases such as "New\", will run here and tokenize it
+				i--;
+				result += currentChar;
+				lastToken = true;
+				nextChar = -1;
+			}
+			
+			if (++i < line.length() ) { //Literally only to check, will return to its prev state
+				i--;
+			}
+			else { // if case "New\ ", it will tokenize it
+				i--;
+				lastToken = true;
+				nextChar = -1;
+			}
+			
+			if (lastToken)
+			{
+				//if there is still something in result, then append the value to the helperToken and insert
+				//handles appending
+				if (result.size() > 0)
+				{
+					helperToken->appendValue(result);
+					result = "";
+				}
+				
+				//handles insertion
+				if (helperToken->getSubTokensVect().size() > 0)
+				{
+					if (isParenth)
+					{
+						
+						this->helperRootPtr = this->_insert(helperRootPtr, new BinaryNode(helperToken));
+						
+					}
+					else
+					{
+						this->insert(helperToken);
+						
+					}
+					//helperToken = new Token();				//we know we do not need this since it is the lastToken
+				}
+			}
+		}
 
 		//case: ||
 		else if (isOr(currentChar.at(0)) && isOr(nextChar.at(0))) {
@@ -641,6 +693,10 @@ bool BinaryTokenCmdTree::isLeftBracket(char val){
 //returns true if character is a right bracket
 bool BinaryTokenCmdTree::isRightBracket(char val){
 	return val == ']';
+}
+
+bool BinaryTokenCmdTree::isBackslash(char val){
+	return val == '\\';
 }
 
 #endif
