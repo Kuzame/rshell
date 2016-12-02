@@ -26,17 +26,19 @@ $ bin/rshell
     #
     []
     ()
+    cd
+    cd -
 
 ### Known Bugs
 - Commands with incomplete parenthesis or brackets do not execute properly
 - Arrow keys do not navigate through the text currently being typed (must use backspace to go back)
-- Functionality to change directories is not implemented (will result in unknown command error)
-
 
 ### Todos
 
  - Handle user arrow keys to navigate input
- - Handle cd commands
+
+### Updates
+ - Precedence and cd commands are now fully functional
 License
 ----
 
