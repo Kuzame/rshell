@@ -15,11 +15,11 @@ echo -e ' cd test2 ; pwd ; cd  test ; pwd ; cd - ; pwd ; ls ; rm -r test ; ls
 exit' | ../bin/rshell
 echo "
 ----- Test cd 4 ------"
-echo -e ' cd test2 ; ls ; cd .. ; rm -r test2
+echo -e ' cd test2 ; pwd ; cd .. ; rm -r test2
 exit' | ../bin/rshell
 echo "
 ----- Test cd 5 ------"
-echo -e ' mkdir New\ Folder ; (cd New\ Folder && cd - ) && rm -r New\ Folder 
+echo -e ' mkdir New\ Folder ; (cd New\ Folder && pwd ); cd - && rm -r New\ Folder 
 exit' | ../bin/rshell
 echo "###### END CD TEST #####
 "
